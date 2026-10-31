@@ -1,7 +1,10 @@
 package com.example.ticket_booking_system.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,5 +28,15 @@ public class ScreenController {
 	public ResponseEntity<ScreenResponseDTO> addScreen(@PathVariable Long theatreId, @Valid @RequestBody ScreenRequestDTO screenRequestDTO){
 		return new ResponseEntity<ScreenResponseDTO>(screenService.addScreen(theatreId, screenRequestDTO), HttpStatus.CREATED);
 	}
+	
+	// Get screens by theatre ID
+    @GetMapping
+    public ResponseEntity<List<ScreenResponseDTO>> getScreensByTheatreId(
+            @PathVariable Long theatreId) {
+
+        return new ResponseEntity<>(
+                screenService.getScreensByTheatreId(theatreId),
+                HttpStatus.OK);
+    }
 
 }

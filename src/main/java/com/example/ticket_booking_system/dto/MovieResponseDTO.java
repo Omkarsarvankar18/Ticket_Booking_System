@@ -16,6 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MovieResponseDTO {
 
+	private Long id;
 	private String title;
 	private String description;
 	private String genre;

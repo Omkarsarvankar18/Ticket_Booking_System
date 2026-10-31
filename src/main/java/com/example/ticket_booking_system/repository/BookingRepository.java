@@ -22,6 +22,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>{
 		List<Booking> findBookingsForCompletedShows(
 		        @Param("status") BookingStatus status,
 		        @Param("currentDateTime") LocalDateTime currentDateTime);
+	
+	List<Booking> findByCustomer_IdOrderByBookingDateTimeDesc(Long userId);
 		
 
 }

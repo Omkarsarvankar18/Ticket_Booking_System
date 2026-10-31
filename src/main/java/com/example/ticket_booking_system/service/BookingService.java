@@ -1,12 +1,18 @@
+
 package com.example.ticket_booking_system.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.ticket_booking_system.dto.BookingRequestDTO;
 import com.example.ticket_booking_system.dto.BookingResponseDTO;
 import com.example.ticket_booking_system.entity.Booking;
 import com.example.ticket_booking_system.entity.BookingSeat;
@@ -34,47 +40,68 @@ public class BookingService {
     private final ShowRepository showRepository;
     private final ShowSeatRepository showSeatRepository;
     private final BookingSeatRepository bookingSeatRepository;
-    
+
     private final ModelMapper modelMapper;
 
     @Transactional
     public BookingResponseDTO createBooking(
             Long userId,
-            Long showId,
-            Long showSeatId) {
+            BookingRequestDTO bookingRequestDTO) {
 
+        // Find customer
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourcesNotFound(
                         "User not found with ID: " + userId));
+
+        // Find show
+        Long showId = bookingRequestDTO.getShowId();
 
         Show show = showRepository.findById(showId)
                 .orElseThrow(() -> new ResourcesNotFound(
                         "Show not found with ID: " + showId));
 
+        // Check show status
         if (show.getStatus() != ShowStatus.SCHEDULED) {
             throw new IllegalArgumentException(
                     "This show is not available for booking");
         }
 
-        ShowSeat showSeat = showSeatRepository.findById(showSeatId)
-                .orElseThrow(() -> new ResourcesNotFound(
-                        "Show seat not found with ID: " + showSeatId));
+        // Validate all selected seats
+        List<ShowSeat> showSeats = new ArrayList<>();
 
-        if (!showSeat.getShow().getId().equals(showId)) {
-            throw new IllegalArgumentException(
-                    "The selected seat does not belong to this show");
+        for (Long showSeatId : bookingRequestDTO.getShowSeatIds()) {
+
+            ShowSeat showSeat = showSeatRepository.findById(showSeatId)
+                    .orElseThrow(() -> new ResourcesNotFound(
+                            "Show seat not found with ID: " + showSeatId));
+
+            // Check whether seat belongs to selected show
+            if (!showSeat.getShow().getId().equals(showId)) {
+                throw new IllegalArgumentException(
+                        "Selected seat does not belong to this show");
+            }
+
+            // Check seat availability
+            if (showSeat.getStatus() != SeatStatus.AVAILABLE) {
+                throw new IllegalArgumentException(
+                        "Seat " + showSeat.getSeat().getSeatNumber()
+                                + " is not available");
+            }
+
+            showSeats.add(showSeat);
         }
 
-        if (showSeat.getStatus() != SeatStatus.AVAILABLE) {
-            throw new IllegalArgumentException(
-                    "The selected seat is not available");
-        }
+        // Calculate total booking amount
+        BigDecimal totalAmount = showSeats.stream()
+                .map(ShowSeat::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Create Booking
+        // Create one booking
         Booking booking = new Booking();
+
         booking.setCustomer(user);
         booking.setShow(show);
-//        booking.(showSeat.getPrice());
+        booking.setTotalAmount(totalAmount);
         booking.setBookingDateTime(LocalDateTime.now());
         booking.setStatus(BookingStatus.CONFIRMED);
 
@@ -85,17 +112,26 @@ public class BookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        // Create BookingSeat
-        BookingSeat bookingSeat = new BookingSeat();
-        bookingSeat.setBooking(savedBooking);
-        bookingSeat.setShowSeat(showSeat);
-        bookingSeat.setPriceAtBooking(showSeat.getPrice());
+        // Create BookingSeat records
+        List<BookingSeat> bookingSeats = new ArrayList<>();
 
-        bookingSeatRepository.save(bookingSeat);
+        for (ShowSeat showSeat : showSeats) {
 
-        // Update ShowSeat status
-        showSeat.setStatus(SeatStatus.BOOKED);
-        showSeatRepository.save(showSeat);
+            BookingSeat bookingSeat = new BookingSeat();
+
+            bookingSeat.setBooking(savedBooking);
+            bookingSeat.setShowSeat(showSeat);
+            bookingSeat.setPriceAtBooking(showSeat.getPrice());
+
+            bookingSeats.add(bookingSeat);
+
+            // Update seat status
+            showSeat.setStatus(SeatStatus.BOOKED);
+        }
+
+        // Save booking seats and update show seats
+        bookingSeatRepository.saveAll(bookingSeats);
+        showSeatRepository.saveAll(showSeats);
 
         // Convert Booking entity to response DTO
         BookingResponseDTO responseDTO =
@@ -107,4 +143,57 @@ public class BookingService {
 
         return responseDTO;
     }
+    
+
+
+@Transactional(readOnly = true)
+public List<BookingResponseDTO> getBookingsByUserId(Long userId) {
+
+    // Check whether customer exists
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new ResourcesNotFound(
+                    "User not found with ID: " + userId));
+
+    // Fetch all customer bookings
+    List<Booking> bookings =
+            bookingRepository.findByCustomer_IdOrderByBookingDateTimeDesc(userId);
+
+    // Convert bookings into response DTOs
+    return bookings.stream().map(booking -> {
+
+        BookingResponseDTO responseDTO =
+                modelMapper.map(booking, BookingResponseDTO.class);
+
+        // Customer details
+        responseDTO.setCustomerId(user.getId());
+        responseDTO.setCustomerName(user.getName());
+
+        // Show details
+        Show show = booking.getShow();
+
+        responseDTO.setShowId(show.getId());
+        responseDTO.setMovieTitle(show.getMovie().getTitle());
+        responseDTO.setTheatreName(
+                show.getScreen().getTheatre().getName());
+        responseDTO.setScreenName(
+                show.getScreen().getScreenName());
+        responseDTO.setShowStartTime(show.getStartTime());
+
+        // Retrieve booked seats
+        List<BookingSeat> bookingSeats =
+                bookingSeatRepository.findByBookingId(booking.getId());
+
+        List<String> seatNumbers = bookingSeats.stream()
+                .map(bookingSeat -> bookingSeat.getShowSeat()
+                        .getSeat().getSeatNumber())
+                .collect(Collectors.toList());
+
+        responseDTO.setSeatNumbers(seatNumbers);
+
+        return responseDTO;
+
+    }).collect(Collectors.toList());
+}
+
+
 }

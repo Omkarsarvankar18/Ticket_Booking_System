@@ -48,14 +48,26 @@ public class AuthService {
 
     public AuthResponseDTO login(LoginRequestDTO requestDTO) {
 
+        // Authenticate user
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         requestDTO.getEmail(),
                         requestDTO.getPassword()));
 
-        String token = jwtService.generateToken(
-                requestDTO.getEmail());
+        // Fetch user from database
+        User user = userRepository.findByEmail(requestDTO.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return new AuthResponseDTO(token, "Bearer");
+        // Generate JWT token
+        String token = jwtService.generateToken(user.getEmail());
+
+        // Return user details and token
+        return new AuthResponseDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                token,
+                "Bearer"
+        );
     }
 }

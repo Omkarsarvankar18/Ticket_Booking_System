@@ -1,5 +1,8 @@
 package com.example.ticket_booking_system.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,17 @@ public class ScreenService {
 	return modelMapper.map(Savedscreen, ScreenResponseDTO.class);
 	
 	}
+	
+	// Get Screens By Theatre ID
+    public List<ScreenResponseDTO> getScreensByTheatreId(Long theatreId) {
+
+        List<Screen> screens =
+                screenRepository.findByTheatre_Id(theatreId);
+
+        return screens.stream()
+                .map(screen -> modelMapper.map(screen, ScreenResponseDTO.class))
+                .collect(Collectors.toList());
+    }
 	
 
 }

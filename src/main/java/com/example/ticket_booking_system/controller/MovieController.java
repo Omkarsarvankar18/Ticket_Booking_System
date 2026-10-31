@@ -54,14 +54,14 @@ public class MovieController {
 	
 	//to get a movie by Title
 	@GetMapping("/title/{title}")
-	public ResponseEntity<List<MovieResponseDTO>> getMovieByTitle(@RequestParam String title){
+	public ResponseEntity<List<MovieResponseDTO>> getMovieByTitle(@PathVariable String title){
 		List<MovieResponseDTO> movie = movieService.findMovieByTitle(title);
 		return new ResponseEntity<>(movie, HttpStatus.OK);
 		
 	}
 	//to get a movie by Genre
 	@GetMapping("/genre/{genre}")
-	public ResponseEntity<List<MovieResponseDTO>> getMovieByGenre(@RequestParam String genre){
+	public ResponseEntity<List<MovieResponseDTO>> getMovieByGenre(@PathVariable String genre){
 		List<MovieResponseDTO> movie = movieService.findMovieByGenre(genre);
 		return new ResponseEntity<>(movie, HttpStatus.OK);
 		
