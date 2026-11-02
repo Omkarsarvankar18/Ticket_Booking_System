@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Booking | Ticket Booking</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body {
+            background: #f4f5fa;
+            font-family: Arial, sans-serif;
+            color: #222;
+        }
+
+        .booking-container {
+            max-width: 650px;
+            margin: 55px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .booking-detail {
+            padding: 13px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .booking-detail span:first-child {
+            color: #777;
+        }
+
+        .booking-detail span:last-child {
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .seat-list {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f7f7fb;
+            border-radius: 10px;
+        }
+
+        .seat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+        }
+
+        .total {
+            font-size: 21px;
+            color: #6c3ce8;
+            font-weight: bold;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 8px;
+            background: #6c3ce8;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .confirm-btn:hover {
+            background: #5426c7;
+        }
+
+        .confirm-btn:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="booking-container">
+
+        <h1>Confirm Your Booking</h1>
+
+        <div id="bookingDetails">
+            <p>Loading booking details...</p>
+        </div>
+
+        <button id="confirmBookingBtn" class="confirm-btn">
+            Confirm Booking
+        </button>
+
+        <div id="message" class="message"></div>
+
+    </div>
+
+    <script src="js/booking.js"></script>
+
+</body>
+</html>

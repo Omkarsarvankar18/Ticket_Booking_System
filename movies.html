@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies | TicketBook</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body class="movies-page">
+
+    <!-- Navigation Bar -->
+    <header class="movies-navbar">
+
+        <a href="index.html" class="movie-brand">
+            🎬 TicketBook
+        </a>
+
+        <nav>
+            <a href="index.html">Home</a>
+
+            <a href="movies.html" class="active">
+                Movies
+            </a>
+
+            <a href="my-bookings.html">
+                My Bookings
+            </a>
+
+            <button onclick="logoutUser()" class="logout-btn">
+                Logout
+            </button>
+        </nav>
+
+    </header>
+
+
+    <!-- Movies Section -->
+    <main class="movies-container">
+
+        <section class="movies-heading">
+            <h1>Explore Movies</h1>
+            <p>Discover movies and book your favourite shows.</p>
+        </section>
+
+
+        <!-- Movie Search -->
+        <section class="movie-search">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search movies by title, genre or language..."
+            >
+
+        </section>
+
+
+        <!-- Loading / Error Message -->
+        <div id="movieMessage" class="movie-message">
+            Loading movies...
+        </div>
+
+
+        <!-- Movie Cards -->
+        <section id="movieList" class="movie-grid"></section>
+
+    </main>
+
+
+    <!-- JavaScript Files -->
+    <script src="./js/auth.js"></script>
+    <script src="./js/movies.js"></script>
+
+    
+
+</body>
+</html>

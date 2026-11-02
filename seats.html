@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Seats | Ticket Booking</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body class="seat-page">
+
+<nav class="navbar navbar-dark seat-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="movies.html">
+            <i class="bi bi-ticket-perforated-fill"></i>
+            TicketBooking
+        </a>
+
+        <a href="shows.html" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Back to Shows
+        </a>
+    </div>
+</nav>
+
+<main class="container py-4">
+
+    <!-- Movie Information -->
+    <section class="seat-movie-info">
+        <div>
+            <span class="seat-step">STEP 4 OF 5</span>
+            <h2 id="movieTitle">Select Your Seats</h2>
+            <p id="showDetails">Loading show details...</p>
+        </div>
+        <div class="seat-movie-icon">
+            <i class="bi bi-camera-reels-fill"></i>
+        </div>
+    </section>
+
+    <div class="seat-layout-container">
+
+        <!-- Seat Selection -->
+        <section class="seat-main">
+
+            <div class="seat-section-heading">
+                <h4>Choose Your Seats</h4>
+                <span id="seatCount">0 seats selected</span>
+            </div>
+
+            <!-- Legend -->
+            <div class="seat-legend">
+                <div>
+                    <span class="legend-box available"></span>
+                    Available
+                </div>
+                <div>
+                    <span class="legend-box selected"></span>
+                    Selected
+                </div>
+                <div>
+                    <span class="legend-box booked"></span>
+                    Booked
+                </div>
+            </div>
+
+            <!-- Cinema Screen -->
+            <div class="cinema-screen-container">
+                <div class="cinema-screen"></div>
+                <p>ALL EYES THIS WAY</p>
+            </div>
+
+            <!-- Seats -->
+            <div id="seatContainer" class="seat-container">
+                <div class="loading-seats">
+                    <div class="spinner-border text-primary"></div>
+                    <p>Loading available seats...</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Booking Summary -->
+        <aside class="seat-summary">
+
+            <h4>Booking Summary</h4>
+
+            <div class="summary-movie">
+                <i class="bi bi-film"></i>
+                <div>
+                    <h5 id="summaryMovie">Movie</h5>
+                    <p id="summaryTheatre">Theatre</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="summary-row">
+                <span>Selected Seats</span>
+                <strong id="selectedSeatNames">None</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Number of Seats</span>
+                <strong id="summarySeatCount">0</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Ticket Amount</span>
+                <strong id="ticketAmount">₹0</strong>
+            </div>
+
+            <hr>
+
+            <div class="summary-total">
+                <span>Total Amount</span>
+                <h3 id="totalAmount">₹0</h3>
+            </div>
+
+            <button id="continueBtn" class="continue-btn" disabled>
+                Continue
+                <i class="bi bi-arrow-right"></i>
+            </button>
+
+            <p class="summary-note">
+                <i class="bi bi-shield-check"></i>
+                Your seat selection will be saved for the next step.
+            </p>
+
+        </aside>
+
+    </div>
+
+</main>
+
+<script src="js/seats.js"></script>
+
+
+</body>
+</html>

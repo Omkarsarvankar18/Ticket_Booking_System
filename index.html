@@ -1,0 +1,825 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketBook | Book Your Movie Tickets</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f8f9fc;
+            color: #182033;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            width: 100%;
+            height: 76px;
+            padding: 0 8%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            color: #635bdb;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4b5563;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #635bdb;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 11px 21px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-block;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            border: 1px solid #635bdb;
+            color: #635bdb;
+            background: transparent;
+        }
+
+        .btn-primary {
+            background: #635bdb;
+            color: white;
+            border: 1px solid #635bdb;
+        }
+
+        .btn-primary:hover {
+            background: #5048bd;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline:hover {
+            background: #635bdb;
+            color: white;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            min-height: 590px;
+            padding: 90px 8%;
+            display: flex;
+            align-items: center;
+            background:
+                linear-gradient(90deg, rgba(15,18,40,0.96), rgba(15,18,40,0.75)),
+                url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1800&q=85");
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+
+        .hero-content {
+            max-width: 650px;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.13);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 9px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            margin-bottom: 25px;
+            color: #d9d5ff;
+        }
+
+        .hero h1 {
+            font-size: clamp(40px, 5vw, 64px);
+            line-height: 1.15;
+            margin-bottom: 22px;
+            font-weight: 800;
+        }
+
+        .hero h1 span {
+            color: #a69fff;
+        }
+
+        .hero p {
+            font-size: 17px;
+            color: #d1d5db;
+            line-height: 1.8;
+            max-width: 550px;
+            margin-bottom: 32px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .hero .btn {
+            padding: 14px 26px;
+        }
+
+        .hero .btn-light {
+            background: white;
+            color: #27234f;
+            border: 1px solid white;
+        }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            max-width: 800px;
+            margin: -45px auto 0;
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            padding: 27px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .stat-item {
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+        .stat-item h2 {
+            color: #635bdb;
+            font-size: 27px;
+            margin-bottom: 5px;
+        }
+
+        .stat-item p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* COMMON SECTIONS */
+        .section {
+            padding: 85px 8%;
+        }
+
+        .section-heading {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .section-heading span {
+            color: #635bdb;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-heading h2 {
+            font-size: 35px;
+            margin: 12px 0;
+            color: #182033;
+        }
+
+        .section-heading p {
+            color: #72788a;
+            font-size: 15px;
+        }
+
+        /* FEATURED MOVIES */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 24px;
+        }
+
+        .movie-card {
+            background: white;
+            border-radius: 13px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            transition: 0.3s;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 285px;
+            object-fit: cover;
+            display: block;
+            background: #e5e7eb;
+        }
+
+        .movie-info {
+            padding: 17px;
+        }
+
+        .movie-info h3 {
+            font-size: 17px;
+            margin-bottom: 7px;
+        }
+
+        .movie-info p {
+            color: #777e8e;
+            font-size: 13px;
+            margin-bottom: 13px;
+        }
+
+        .movie-info a {
+            color: #635bdb;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .view-all {
+            text-align: center;
+            margin-top: 38px;
+        }
+
+        /* WHY CHOOSE US */
+        .features-section {
+            background: #f0efff;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 32px 25px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+        }
+
+        .feature-icon {
+            width: 65px;
+            height: 65px;
+            border-radius: 15px;
+            display: grid;
+            place-items: center;
+            background: #eeecff;
+            font-size: 29px;
+            margin: 0 auto 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 19px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #73798a;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* BOOKING STEPS */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 25px 15px;
+        }
+
+        .step-number {
+            width: 55px;
+            height: 55px;
+            display: grid;
+            place-items: center;
+            background: #635bdb;
+            color: white;
+            border-radius: 50%;
+            font-size: 21px;
+            font-weight: 800;
+            margin: 0 auto 20px;
+        }
+
+        .step-card h3 {
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        .step-card p {
+            font-size: 13px;
+            color: #72788a;
+            line-height: 1.7;
+        }
+
+        /* CTA */
+        .cta {
+            margin: 0 8% 85px;
+            padding: 65px 30px;
+            text-align: center;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #635bdb, #40378f);
+            color: white;
+        }
+
+        .cta h2 {
+            font-size: 34px;
+            margin-bottom: 15px;
+        }
+
+        .cta p {
+            color: #e1defe;
+            margin-bottom: 27px;
+            font-size: 15px;
+        }
+
+        .cta .btn {
+            background: white;
+            color: #5048bd;
+            padding: 14px 28px;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #17172b;
+            color: white;
+            padding: 55px 8% 22px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 35px;
+            padding-bottom: 35px;
+        }
+
+        .footer-brand {
+            max-width: 330px;
+        }
+
+        .footer-brand h2 {
+            color: #a69fff;
+            margin-bottom: 15px;
+        }
+
+        .footer-brand p {
+            color: #b8b9c8;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .footer-links h3 {
+            margin-bottom: 17px;
+            font-size: 16px;
+        }
+
+        .footer-links a {
+            display: block;
+            color: #b8b9c8;
+            margin-bottom: 11px;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            border-top: 1px solid #34344a;
+            padding-top: 22px;
+            color: #a5a6b5;
+            font-size: 13px;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 850px) {
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .hero {
+                padding: 75px 6%;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                height: auto;
+                min-height: 70px;
+                padding: 15px 5%;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .nav-buttons {
+                gap: 7px;
+            }
+
+            .nav-buttons .btn {
+                padding: 9px 12px;
+                font-size: 12px;
+            }
+
+            .hero {
+                min-height: 510px;
+                padding: 65px 6%;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .stats {
+                margin: -25px 5% 0;
+                padding: 20px 10px;
+            }
+
+            .stat-item h2 {
+                font-size: 21px;
+            }
+
+            .stat-item p {
+                font-size: 10px;
+            }
+
+            .section {
+                padding: 65px 6%;
+            }
+
+            .section-heading h2 {
+                font-size: 28px;
+            }
+
+            .movie-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 13px;
+            }
+
+            .movie-card img {
+                height: 220px;
+            }
+
+            .movie-info {
+                padding: 12px;
+            }
+
+            .movie-info h3 {
+                font-size: 14px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cta {
+                margin: 0 5% 60px;
+                padding: 45px 20px;
+            }
+
+            .cta h2 {
+                font-size: 26px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION BAR -->
+    <header class="navbar">
+        <a href="index.html" class="logo">🎬 TicketBook</a>
+
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#" onclick="openProtectedPage('movies.html'); return false;">Movies</a>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+        </nav>
+
+        <div class="nav-buttons">
+            <a href="login.html" class="btn btn-outline">Login</a>
+            <a href="register.html" class="btn btn-primary">Sign Up</a>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-tag">🍿 Your Movie Experience Starts Here</span>
+
+            <h1>
+                Your Next Great
+                <span>Movie Experience</span>
+                Starts Here.
+            </h1>
+
+            <p>
+                Discover the latest movies, explore theatres, choose your
+                favourite seats and book your tickets online with TicketBook.
+                Your entertainment journey is just a click away.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#" onclick="openProtectedPage('movies.html'); return false;" class="btn btn-primary"> Explore Movies →</a>
+                <a href="register.html" class="btn btn-light">Get Started</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS SECTION -->
+    <section class="stats">
+        <div class="stat-item">
+            <h2>Movies</h2>
+            <p>Explore your favourites</p>
+        </div>
+
+        <div class="stat-item">
+            <h2>Shows</h2>
+            <p>Choose your preferred time</p>
+        </div>
+
+        <div class="stat-item">
+            <h2>Easy</h2>
+            <p>Simple online booking</p>
+        </div>
+    </section>
+
+    <!-- FEATURED MOVIES -->
+    <section class="section" id="movies">
+        <div class="section-heading">
+            <span>Find Your Favourite</span>
+            <h2>Movies You Can Explore</h2>
+            <p>Choose a movie and start planning your next cinema experience.</p>
+        </div>
+
+        <div class="movie-grid">
+
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BODUwNDNjYzctODUxNy00ZTA2LWIyYTEtMDc5Y2E5ZjBmNTMzXkEyXkFqcGdeQXVyODE5NzE3OTE%40._V1_FMjpg_UX1000_.jpg"
+                     alt="RRR Movie Poster">
+                <div class="movie-info">
+                    <h3>RRR</h3>
+                    <p>Action · Drama</p>
+                    <a href="movies.html">Book Tickets →</a>
+                </div>
+            </div>
+
+            <div class="movie-card">
+                <img src="https://artofthemovies.co.uk/cdn/shop/files/inception_advance_SD18120_B-731214_920c5dfe-8d66-47c7-af74-11b98a83ebbf_1024x1024%402x.jpg?v=1737545739"
+                     alt="Inception Movie Poster">
+                <div class="movie-info">
+                    <h3>Inception</h3>
+                    <p>Action · Sci-Fi</p>
+                    <a href="movies.html">Book Tickets →</a>
+                </div>
+            </div>
+
+            <div class="movie-card">
+                <img src="https://cdn.ome.lt/legacy/images/galerias/Interstellar/Interstellar-Poster-18Set2014-1.jpg"
+                     alt="Interstellar Movie Poster">
+                <div class="movie-info">
+                    <h3>Interstellar</h3>
+                    <p>Sci-Fi · Adventure</p>
+                    <a href="movies.html">Book Tickets →</a>
+                </div>
+            </div>
+
+            <div class="movie-card">
+                <img src="https://m.media-amazon.com/images/M/MV5BZDZkM2U0Y2ItMTAwOC00MTc3LWI5NTQtZTk3Yjc2NGI5MWYzXkEyXkFqcGc%40._V1_FMjpg_UX1000_.jpg"
+                     alt="Drishyam Movie Poster">
+                <div class="movie-info">
+                    <h3>Drishyam</h3>
+                    <p>Thriller · Mystery</p>
+                    <a href="movies.html">Book Tickets →</a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="view-all">
+            <a href="movies.html" class="btn btn-primary">View All Movies →</a>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="section features-section" id="features">
+        <div class="section-heading">
+            <span>Why TicketBook?</span>
+            <h2>Everything You Need in One Place</h2>
+            <p>Enjoy a simple and convenient online movie ticket booking experience.</p>
+        </div>
+
+        <div class="features-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">🎬</div>
+                <h3>Explore Movies</h3>
+                <p>Browse available movies and discover their details, genres and languages.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🏢</div>
+                <h3>Choose Theatres</h3>
+                <p>Explore available theatres and select the cinema that suits you.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💺</div>
+                <h3>Select Your Seats</h3>
+                <p>Choose your preferred available seats before confirming your booking.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🕒</div>
+                <h3>Flexible Show Selection</h3>
+                <p>Explore available shows and choose a convenient show time.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>Secure Login</h3>
+                <p>Register and log in to access your personal booking features.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎟️</div>
+                <h3>My Bookings</h3>
+                <p>View your bookings and keep track of your ticket reservations.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" id="how-it-works">
+        <div class="section-heading">
+            <span>Simple Booking Process</span>
+            <h2>Book Your Tickets in 4 Steps</h2>
+            <p>Going to the movies has never been easier.</p>
+        </div>
+
+        <div class="steps-grid">
+
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Choose a Movie</h3>
+                <p>Explore the movie collection and select the movie you want to watch.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Select Theatre & Show</h3>
+                <p>Choose your preferred theatre and available show timing.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Select Your Seats</h3>
+                <p>Check seat availability and select your favourite seats.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h3>Confirm Booking</h3>
+                <p>Confirm your reservation and check your booking details.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="cta">
+        <h2>Ready for Your Next Movie?</h2>
+        <p>Join TicketBook and make your movie booking experience easier.</p>
+        <a href="movies.html" class="btn">Explore Movies Now →</a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+
+            <div class="footer-brand">
+                <h2>🎬 TicketBook</h2>
+                <p>
+                    Your online destination for discovering movies,
+                    exploring theatres and booking movie tickets.
+                    Enjoy a simple and convenient booking experience.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <a href="index.html">Home</a>
+                <a href="movies.html">Movies</a>
+                <a href="login.html">Login</a>
+                <a href="register.html">Register</a>
+            </div>
+
+            <div class="footer-links">
+                <h3>My Account</h3>
+                <a href="my-bookings.html">My Bookings</a>
+                <a href="login.html">Sign In</a>
+                <a href="register.html">Create Account</a>
+            </div>
+
+        </div>
+
+        <div class="copyright">
+            © 2026 TicketBook. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script>
+    function openProtectedPage(page) {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            window.location.href = page;
+        } else {
+            alert("Please login first to continue.");
+            localStorage.setItem("redirectAfterLogin", page);
+            window.location.href = "login.html";
+        }
+    }
+</script>
+
+</body>
+</html>

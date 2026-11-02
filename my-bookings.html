@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings | Ticket Booking</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body {
+            background: #f4f5fa;
+            font-family: Arial, sans-serif;
+            color: #25233a;
+        }
+
+        .page-container {
+            max-width: 1000px;
+            margin: 45px auto;
+            padding: 20px;
+        }
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .page-heading h1 {
+            margin-bottom: 8px;
+        }
+
+        .booking-card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .booking-reference {
+            color: #6c3ce8;
+            font-weight: bold;
+        }
+
+        .status {
+            background: #e3f8e9;
+            color: #16833b;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .booking-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 22px 0;
+        }
+
+        .info-item small {
+            color: #888;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .info-item strong {
+            font-size: 15px;
+        }
+
+        .seat-section {
+            background: #f7f5fc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .seat-tag {
+            display: inline-block;
+            background: #e8ddff;
+            color: #6034c6;
+            padding: 7px 12px;
+            border-radius: 6px;
+            margin: 5px 5px 0 0;
+            font-weight: bold;
+        }
+
+        .booking-footer {
+            border-top: 1px solid #eee;
+            padding-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .total-amount {
+            font-size: 22px;
+            color: #6c3ce8;
+            font-weight: bold;
+        }
+
+        .empty-message,
+        .error-message,
+        .loading-message {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #6c3ce8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media(max-width: 600px) {
+            .booking-info {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-card {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="page-container">
+
+        <div class="page-heading">
+            <h1>My Bookings</h1>
+            <p>View and manage your movie ticket bookings.</p>
+        </div>
+
+        <div id="bookingsContainer">
+            <div class="loading-message">
+                Loading your bookings...
+            </div>
+        </div>
+
+        <a href="movies.html" class="back-btn">
+            ← Browse Movies
+        </a>
+
+    </main>
+
+    <script src="js/my-bookings.js"></script>
+
+    
+
+</body>
+</html>

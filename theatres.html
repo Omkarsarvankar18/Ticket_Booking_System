@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Theatre | TicketBook</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="movies-page">
+
+    <header class="movies-navbar">
+        <a href="index.html" class="movie-brand">🎬 TicketBook</a>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="movies.html">Movies</a>
+            <button onclick="logoutUser()" class="logout-btn">Logout</button>
+        </nav>
+    </header>
+
+    <main class="movies-container">
+
+        <section class="movies-heading">
+            <h1>Select Your Theatre</h1>
+            <p>Choose a theatre to continue booking your tickets.</p>
+
+            <div id="selectedMovieInfo" class="selected-movie-info"></div>
+        </section>
+
+        <div id="theatreMessage" class="movie-message">
+            Loading theatres...
+        </div>
+
+        <section id="theatreList" class="movie-grid"></section>
+
+    </main>
+
+    <script src="./js/auth.js"></script>
+    <script src="./js/theatres.js"></script>
+
+    
+
+</body>
+</html>
