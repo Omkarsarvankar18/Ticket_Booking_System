@@ -1,0 +1,596 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Ticket Booking System</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f6fa;
+            color: #252b42;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #172033;
+            color: white;
+            padding: 25px 18px;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 700;
+            padding: 0 12px 30px;
+            border-bottom: 1px solid #344056;
+        }
+
+        .logo i {
+            color: #f5a623;
+            margin-right: 9px;
+        }
+
+        .sidebar h4 {
+            color: #929db2;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 28px 12px 15px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin-bottom: 7px;
+        }
+
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 13px 14px;
+            color: #c5ccda;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: #f5a623;
+            color: #172033;
+        }
+
+        .nav-menu i {
+            width: 18px;
+            text-align: center;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            left: 18px;
+            right: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 30px;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h2 {
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .topbar p {
+            color: #8991a4;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+        }
+
+        .profile-icon {
+            background: #fff1d6;
+            color: #e99a13;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-profile h4 {
+            font-size: 13px;
+        }
+
+        .admin-profile span {
+            color: #8991a4;
+            font-size: 11px;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 23px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-card h4 {
+            color: #8991a4;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .stat-card h2 {
+            font-size: 27px;
+            color: #252b42;
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 21px;
+        }
+
+        .movies-icon {
+            background: #e8efff;
+            color: #4778ed;
+        }
+
+        .theatre-icon {
+            background: #e5f8ef;
+            color: #26a269;
+        }
+
+        .show-icon {
+            background: #fff1dc;
+            color: #e99a13;
+        }
+
+        .booking-icon {
+            background: #f4e9ff;
+            color: #9b59b6;
+        }
+
+        /* Quick Actions */
+        .section-title {
+            font-size: 19px;
+            margin-bottom: 18px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .action-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: #252b42;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.04);
+            transition: 0.3s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .action-card i {
+            font-size: 25px;
+            color: #e99a13;
+            margin-bottom: 13px;
+        }
+
+        .action-card h4 {
+            font-size: 14px;
+        }
+
+        /* Recent Bookings */
+        .table-container {
+            background: white;
+            padding: 23px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.04);
+            overflow-x: auto;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-header h3 {
+            font-size: 18px;
+        }
+
+        .view-all {
+            text-decoration: none;
+            color: #e99a13;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th {
+            background: #f7f8fb;
+            color: #8991a4;
+            font-size: 12px;
+            text-align: left;
+            padding: 14px;
+        }
+
+        td {
+            padding: 16px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f1f5;
+        }
+
+        .status {
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .confirmed {
+            background: #e3f8ed;
+            color: #219653;
+        }
+
+        .pending {
+            background: #fff3dc;
+            color: #d99013;
+        }
+
+        /* Responsive Design */
+        @media(max-width: 1100px) {
+            .stats-grid,
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 700px) {
+            .sidebar {
+                width: 70px;
+                padding: 20px 10px;
+            }
+
+            .logo {
+                font-size: 18px;
+                padding: 10px 0 25px;
+                text-align: center;
+            }
+
+            .logo span,
+            .sidebar h4,
+            .nav-menu a span,
+            .logout span {
+                display: none;
+            }
+
+            .nav-menu a {
+                justify-content: center;
+                padding: 14px 5px;
+            }
+
+            .logout {
+                left: 10px;
+                right: 10px;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+                padding: 18px;
+            }
+
+            .stats-grid,
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                gap: 15px;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <i class="fa-solid fa-ticket"></i>
+            <span>Ticket Admin</span>
+        </div>
+
+        <h4>Main Menu</h4>
+
+        <ul class="nav-menu">
+            <li>
+                <a href="admin-dashboard.html" class="active">
+                    <i class="fa-solid fa-gauge"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-movies.html">
+                    <i class="fa-solid fa-film"></i>
+                    <span>Manage Movies</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-theatres.html">
+                    <i class="fa-solid fa-building"></i>
+                    <span>Manage Theatres</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-screens.html">
+                    <i class="fa-solid fa-tv"></i>
+                    <span>Manage Screens</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-seats.html">
+                    <i class="fa-solid fa-chair"></i>
+                    <span>Manage Seats</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-shows.html">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Manage Shows</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-bookings.html">
+                    <i class="fa-solid fa-ticket"></i>
+                    <span>Manage Bookings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="logout">
+            <ul class="nav-menu">
+                <li>
+                    <a href="#" onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <div>
+                <h2>Dashboard Overview</h2>
+                <p>Welcome back! Here's what's happening with your theatre business.</p>
+            </div>
+
+            <div class="admin-profile">
+                <div class="profile-icon">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div>
+                    <h4 id="adminName">Administrator</h4>
+                    <span>ADMIN</span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div>
+                    <h4>Total Movies</h4>
+                    <h2 id="totalMovies">--</h2>
+                </div>
+                <div class="stat-icon movies-icon">
+                    <i class="fa-solid fa-film"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <h4>Total Theatres</h4>
+                    <h2 id="totalTheatres">--</h2>
+                </div>
+                <div class="stat-icon theatre-icon">
+                    <i class="fa-solid fa-building"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <h4>Total Shows</h4>
+                    <h2 id="totalShows">--</h2>
+                </div>
+                <div class="stat-icon show-icon">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <h4>Total Bookings</h4>
+                    <h2 id="totalBookings">--</h2>
+                </div>
+                <div class="stat-icon booking-icon">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Quick Actions -->
+        <h3 class="section-title">Quick Actions</h3>
+
+        <div class="quick-actions">
+
+            <a href="manage-movies.html" class="action-card">
+                <i class="fa-solid fa-plus-circle"></i>
+                <h4>Add Movie</h4>
+            </a>
+
+            <a href="manage-theatres.html" class="action-card">
+                <i class="fa-solid fa-building-circle-plus"></i>
+                <h4>Add Theatre</h4>
+            </a>
+
+            <a href="manage-shows.html" class="action-card">
+                <i class="fa-solid fa-calendar-plus"></i>
+                <h4>Create Show</h4>
+            </a>
+
+            <a href="manage-bookings.html" class="action-card">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <h4>View Bookings</h4>
+            </a>
+
+        </div>
+
+
+        <!-- Recent Bookings -->
+        <div class="table-container">
+
+            <div class="table-header">
+                <h3>Recent Bookings</h3>
+                <a href="manage-bookings.html" class="view-all">View All</a>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Customer</th>
+                        <th>Movie</th>
+                        <th>Booking Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="recentBookings">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">
+                            Loading bookings...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+    function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("tokenType");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("userName");
+
+        window.location.href = "admin-login.html";
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Seats | Ticket Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+body{background:#f5f6fa;color:#252b42}
+.dashboard{display:flex;min-height:100vh}
+.sidebar{width:250px;background:#172033;color:#fff;padding:25px 18px;position:fixed;height:100vh;z-index:10}
+.logo{font-size:23px;font-weight:700;padding:0 12px 30px;border-bottom:1px solid #344056}
+.logo i{color:#f5a623;margin-right:9px}
+.sidebar h4{color:#929db2;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin:28px 12px 15px}
+.nav-menu{list-style:none}
+.nav-menu li{margin-bottom:7px}
+.nav-menu a{display:flex;align-items:center;gap:13px;padding:13px 14px;color:#c5ccda;text-decoration:none;border-radius:8px;font-size:14px;transition:.3s}
+.nav-menu a:hover,.nav-menu a.active{background:#f5a623;color:#172033}
+.nav-menu i{width:18px;text-align:center}
+.logout{position:absolute;bottom:25px;left:18px;right:18px}
+.main-content{margin-left:250px;width:calc(100% - 250px);padding:30px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;gap:15px}
+.topbar h2{font-size:25px;font-weight:700}
+.topbar p{color:#8991a4;font-size:13px;margin-top:5px}
+.admin-profile{display:flex;align-items:center;gap:12px;background:#fff;padding:10px 16px;border-radius:10px;box-shadow:0 3px 12px rgba(0,0,0,.04)}
+.profile-icon{background:#fff1d6;color:#e99a13;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.admin-profile h4{font-size:13px}
+.admin-profile span{color:#8991a4;font-size:11px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:25px}
+.stat-card{background:#fff;padding:22px;border-radius:12px;box-shadow:0 3px 15px rgba(0,0,0,.04);display:flex;justify-content:space-between;align-items:center}
+.stat-card h4{color:#8991a4;font-size:13px;font-weight:500;margin-bottom:12px}
+.stat-card h2{font-size:27px;color:#252b42}
+.stat-icon{width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:12px;font-size:21px}
+.accent-icon{background:#fff1dc;color:#e99a13}
+.green-icon{background:#e5f8ef;color:#26a269}
+.blue-icon{background:#e8efff;color:#4778ed}
+.content-grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:20px;align-items:start}
+.panel,.table-container{background:#fff;padding:23px;border-radius:12px;box-shadow:0 3px 15px rgba(0,0,0,.04);min-width:0}
+.panel-heading,.table-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+.panel-heading h3,.table-header h3{font-size:18px}
+.panel-heading p{font-size:12px;color:#8991a4;margin-top:5px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:8px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 13px;border:1px solid #dfe3eb;border-radius:7px;outline:none;font-size:13px;color:#252b42;background:#fff}
+.form-group textarea{min-height:85px;resize:vertical}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#e99a13}
+.btn{border:0;border-radius:7px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:#f5a623;color:#172033}
+.btn-primary:hover{background:#e99a13}
+.btn-secondary{background:#eef1f6;color:#3d4658}
+.table-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search-input{padding:10px 12px;border:1px solid #dfe3eb;border-radius:7px;outline:none;font-size:12px;min-width:190px}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th{background:#f7f8fb;color:#8991a4;font-size:11px;text-align:left;padding:13px 12px;text-transform:uppercase}
+td{padding:14px 12px;font-size:13px;border-bottom:1px solid #f0f1f5;vertical-align:middle}
+.empty{text-align:center;color:#8991a4;padding:28px 10px}
+.badge{display:inline-block;padding:6px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#fff3dc;color:#b77912}
+.message{display:none;padding:11px 13px;border-radius:7px;font-size:12px;margin-bottom:15px}
+.message.show{display:block}
+.message.success{background:#e3f8ed;color:#219653}
+.message.error{background:#fff0f0;color:#d64545}
+.helper{font-size:11px;color:#8991a4;margin-top:6px}
+
+@media(max-width:1100px){
+.content-grid{grid-template-columns:1fr}
+.stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+.sidebar{width:70px;padding:20px 10px}
+.logo{font-size:18px;padding:10px 0 25px;text-align:center}
+.logo span,.sidebar h4,.nav-menu a span,.logout span{display:none}
+.nav-menu a{justify-content:center;padding:14px 5px}
+.logout{left:10px;right:10px}
+.main-content{margin-left:70px;width:calc(100% - 70px);padding:18px}
+.stats-grid{grid-template-columns:1fr}
+.topbar{align-items:flex-start;flex-direction:column}
+.admin-profile{align-self:flex-end}
+}
+</style>
+</head>
+
+<body>
+<div class="dashboard">
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-ticket"></i><span>Ticket Admin</span></div>
+    <h4>Main Menu</h4>
+
+    <ul class="nav-menu">
+        <li><a href="admin-dashboard.html"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></a></li>
+        <li><a href="manage-movies.html"><i class="fa-solid fa-film"></i><span>Manage Movies</span></a></li>
+        <li><a href="manage-theatres.html"><i class="fa-solid fa-building"></i><span>Manage Theatres</span></a></li>
+        <li><a href="manage-screens.html"><i class="fa-solid fa-tv"></i><span>Manage Screens</span></a></li>
+        <li><a href="manage-seats.html" class="active"><i class="fa-solid fa-chair"></i><span>Manage Seats</span></a></li>
+        <li><a href="manage-shows.html"><i class="fa-solid fa-calendar-days"></i><span>Manage Shows</span></a></li>
+        <li><a href="manage-bookings.html"><i class="fa-solid fa-ticket"></i><span>Manage Bookings</span></a></li>
+    </ul>
+
+    <div class="logout">
+        <ul class="nav-menu">
+            <li><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a></li>
+        </ul>
+    </div>
+</aside>
+
+<main class="main-content">
+
+<header class="topbar">
+    <div>
+        <h2>Manage Seats</h2>
+        <p>Create seats and view seats by screen.</p>
+    </div>
+
+    <div class="admin-profile">
+        <div class="profile-icon"><i class="fa-solid fa-user-shield"></i></div>
+        <div>
+            <h4 id="adminName">Administrator</h4>
+            <span>ADMIN</span>
+        </div>
+    </div>
+</header>
+
+<section class="stats-grid">
+    <div class="stat-card">
+        <div><h4>Total Seats</h4><h2 id="totalSeats">0</h2></div>
+        <div class="stat-icon blue-icon"><i class="fa-solid fa-chair"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div><h4>Seat Types</h4><h2 id="seatTypes">0</h2></div>
+        <div class="stat-icon green-icon"><i class="fa-solid fa-layer-group"></i></div>
+    </div>
+
+    <div class="stat-card">
+        <div><h4>Selected Screen</h4><h2 id="selectedScreen">--</h2></div>
+        <div class="stat-icon accent-icon"><i class="fa-solid fa-tv"></i></div>
+    </div>
+</section>
+
+<section class="panel" style="margin-bottom:20px">
+    <div class="panel-heading">
+        <div>
+            <h3>Select Theatre and Screen</h3>
+            <p>Choose a theatre and then one of its screens.</p>
+        </div>
+    </div>
+
+    <div class="content-grid" style="grid-template-columns:1fr 1fr">
+        <div class="form-group">
+            <label for="theatreSelect">Theatre</label>
+            <select id="theatreSelect">
+                <option value="">Loading theatres...</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="screenSelect">Screen</label>
+            <select id="screenSelect" disabled>
+                <option value="">Select a theatre first</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="content-grid">
+
+    <div class="panel">
+        <div class="panel-heading">
+            <div>
+                <h3>Add New Seat</h3>
+                <p>Add a seat to the selected screen.</p>
+            </div>
+        </div>
+
+        <div id="seatMessage" class="message"></div>
+
+        <form id="seatForm">
+
+            <div class="form-group">
+                <label for="seatNumber">Seat Number</label>
+                <input id="seatNumber" required placeholder="Example: A1">
+            </div>
+
+            <div class="form-group">
+                <label for="seatType">Seat Type</label>
+                <input id="seatType" required placeholder="Enter the seat type used by your backend">
+            </div>
+
+            <p class="helper">Enter a seat type accepted by your Seat entity or enum.</p>
+
+            <button class="btn btn-primary" type="submit" style="width:100%">
+                Add Seat
+            </button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <div class="table-header">
+            <h3>Screen Seats</h3>
+            <div class="table-tools">
+                <input class="search-input" id="seatSearch" placeholder="Search seats...">
+                <button class="btn btn-secondary" id="refreshSeats">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="table-scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Seat Number</th><th>Seat Type</th><th>Screen</th>
+                    </tr>
+                </thead>
+                <tbody id="seatRows">
+                    <tr><td colspan="4" class="empty">Select a theatre and screen.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+</main>
+</div>
+
+<script>
+const API_BASE_URL = "http://localhost:8080/api/v1";
+
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("userRole");
+
+if (!token || role !== "ADMIN") {
+    alert("Access denied! Admin login required.");
+    window.location.href = "login.html";
+}
+
+document.getElementById("adminName").textContent =
+    localStorage.getItem("userName") || "Administrator";
+
+function authHeaders() {
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `${localStorage.getItem("tokenType") || "Bearer"} ${localStorage.getItem("token")}`
+    };
+}
+
+async function apiRequest(url, options = {}) {
+    const response = await fetch(url, {
+        ...options,
+        headers: { ...authHeaders(), ...(options.headers || {}) }
+    });
+
+    const raw = await response.text();
+    let data = null;
+
+    try {
+        data = raw ? JSON.parse(raw) : null;
+    } catch {
+        data = raw;
+    }
+
+    if (!response.ok) {
+        const message = data && typeof data === "object"
+            ? (data.message || data.error || data.detail)
+            : data;
+
+        throw new Error(message || `Request failed (${response.status})`);
+    }
+
+    return data;
+}
+
+function listFrom(data) {
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.content)) return data.content;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
+}
+
+function showMessage(elementId, message, type = "success") {
+    const el = document.getElementById(elementId);
+    el.textContent = message;
+    el.className = `message show ${type}`;
+
+    setTimeout(() => {
+        el.className = "message";
+    }, 4500);
+}
+
+function logout() {
+    ["token", "tokenType", "userId", "userRole", "userName", "userEmail"]
+        .forEach(key => localStorage.removeItem(key));
+
+    window.location.href = "login.html";
+}
+
+let theatres = [];
+let screens = [];
+let seats = [];
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[c]);
+}
+
+async function loadTheatres() {
+    theatres = listFrom(await apiRequest(`${API_BASE_URL}/theatres`, {
+        method: "GET"
+    }));
+
+    const select = document.getElementById("theatreSelect");
+
+    select.innerHTML = '<option value="">Select Theatre</option>';
+
+    theatres.forEach(t => {
+        select.add(new Option(t.name, t.id));
+    });
+}
+
+async function loadScreensForTheatre(theatreId) {
+    const select = document.getElementById("screenSelect");
+
+    select.disabled = true;
+    select.innerHTML = '<option value="">Loading screens...</option>';
+
+    seats = [];
+    renderSeats();
+
+    document.getElementById("selectedScreen").textContent = "--";
+
+    if (!theatreId) {
+        select.innerHTML = '<option value="">Select a theatre first</option>';
+        return;
+    }
+
+    try {
+        screens = listFrom(await apiRequest(
+            `${API_BASE_URL}/screens/theatre/${theatreId}`,
+            { method: "GET" }
+        ));
+
+        select.innerHTML = '<option value="">Select Screen</option>';
+
+        screens.forEach(s => {
+            select.add(new Option(`${s.screenName} (${s.capacity})`, s.id));
+        });
+
+        select.disabled = screens.length === 0;
+
+        if (!screens.length) {
+            select.innerHTML = '<option value="">No screens available</option>';
+        }
+
+    } catch (e) {
+        select.innerHTML = '<option value="">Unable to load screens</option>';
+        showMessage("seatMessage", e.message, "error");
+    }
+}
+
+async function loadSeats() {
+    const screenId = document.getElementById("screenSelect").value;
+
+    if (!screenId) {
+        seats = [];
+        renderSeats();
+        document.getElementById("selectedScreen").textContent = "--";
+        return;
+    }
+
+    try {
+        seats = listFrom(await apiRequest(
+            `${API_BASE_URL}/screens/${screenId}/seats`,
+            { method: "GET" }
+        ));
+
+        const selected = document.getElementById("screenSelect").selectedOptions[0];
+
+        document.getElementById("selectedScreen").textContent =
+            selected ? selected.textContent.split(" (")[0] : "--";
+
+        renderSeats();
+
+    } catch (e) {
+        showMessage("seatMessage", e.message, "error");
+    }
+}
+
+function renderSeats() {
+    const q = document.getElementById("seatSearch").value.toLowerCase();
+
+    const filtered = seats.filter(s =>
+        [s.seatNumber, s.seatType, s.screenName]
+            .some(v => String(v ?? "").toLowerCase().includes(q))
+    );
+
+    document.getElementById("totalSeats").textContent = seats.length;
+
+    document.getElementById("seatTypes").textContent =
+        new Set(seats.map(s => s.seatType).filter(Boolean)).size;
+
+    const tbody = document.getElementById("seatRows");
+
+    tbody.innerHTML = filtered.length
+        ? filtered.map(s => `
+            <tr>
+                <td>${escapeHtml(s.id)}</td>
+                <td><strong>${escapeHtml(s.seatNumber)}</strong></td>
+                <td><span class="badge">${escapeHtml(s.seatType)}</span></td>
+                <td>${escapeHtml(s.screenName)}</td>
+            </tr>
+        `).join("")
+        : '<tr><td colspan="4" class="empty">No seats found for this screen.</td></tr>';
+}
+
+document.getElementById("theatreSelect").addEventListener("change", e => {
+    loadScreensForTheatre(e.target.value);
+});
+
+document.getElementById("screenSelect").addEventListener("change", loadSeats);
+document.getElementById("seatSearch").addEventListener("input", renderSeats);
+document.getElementById("refreshSeats").addEventListener("click", loadSeats);
+
+document.getElementById("seatForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const screenId = document.getElementById("screenSelect").value;
+
+    if (!screenId) {
+        showMessage("seatMessage", "Select a theatre and screen first.", "error");
+        return;
+    }
+
+    const payload = {
+        seatNumber: document.getElementById("seatNumber").value.trim(),
+        seatType: document.getElementById("seatType").value.trim()
+    };
+
+    try {
+        await apiRequest(`${API_BASE_URL}/screens/${screenId}/seats`, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
+
+        e.target.reset();
+
+        showMessage("seatMessage", "Seat added successfully.");
+        await loadSeats();
+
+    } catch (err) {
+        showMessage("seatMessage", err.message, "error");
+    }
+});
+
+(async function initialize() {
+    try {
+        await loadTheatres();
+    } catch (e) {
+        showMessage("seatMessage", e.message, "error");
+    }
+})();
+</script>
+</body>
+</html>

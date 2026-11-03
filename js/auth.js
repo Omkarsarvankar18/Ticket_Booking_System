@@ -1,9 +1,10 @@
 
 const API_BASE_URL = "http://localhost:8080/api/v1/auth";
 
+// ==============================
 // REGISTER USER
+// ==============================
 async function registerUser(event) {
-
     event.preventDefault();
 
     const name = document.getElementById("name").value.trim();
@@ -28,7 +29,6 @@ async function registerUser(event) {
     };
 
     try {
-
         const response = await fetch(`${API_BASE_URL}/register`, {
             method: "POST",
             headers: {
@@ -44,21 +44,19 @@ async function registerUser(event) {
         }
 
         alert("Registration successful! Please login.");
-
         window.location.href = "login.html";
 
     } catch (error) {
-
-        console.error(error);
+        console.error("Registration Error:", error);
         alert(error.message);
-
     }
 }
 
 
-// LOGIN USER
+// ==============================
+// LOGIN USER - ADMIN & CUSTOMER
+// ==============================
 async function loginUser(event) {
-
     event.preventDefault();
 
     const email = document.getElementById("email").value.trim();
@@ -70,7 +68,6 @@ async function loginUser(event) {
     };
 
     try {
-
         const response = await fetch(`${API_BASE_URL}/login`, {
             method: "POST",
             headers: {
@@ -90,77 +87,81 @@ async function loginUser(event) {
             throw new Error("Login response is missing token or user ID!");
         }
 
-        // Store JWT token
+        // Check role
+        const userRole = (data.role || "").toUpperCase();
+
+        if (userRole !== "ADMIN" && userRole !== "CUSTOMER") {
+            throw new Error("Invalid user role returned by server!");
+        }
+
+        // Clear previous login information
+        localStorage.removeItem("redirectAfterLogin");
+
+        // Store authenticated user information
         localStorage.setItem("token", data.token);
         localStorage.setItem("tokenType", data.tokenType || "Bearer");
-
-        // Store logged-in customer details
         localStorage.setItem("userId", data.userId);
-        localStorage.setItem("userName", data.name);
-        localStorage.setItem("userEmail", data.email);
+        localStorage.setItem("userName", data.name || "");
+        localStorage.setItem("userEmail", data.email || "");
+        localStorage.setItem("userRole", userRole);
 
-        // alert("Login successful!");
+        console.log("Login successful");
+        console.log("Email:", data.email);
+        console.log("Role:", userRole);
 
-        // Redirect to originally requested page
-        const redirectPage = localStorage.getItem("redirectAfterLogin");
+        // ADMIN REDIRECTION
+        if (userRole === "ADMIN") {
+            window.location.replace("./admin-dashboard.html");
+            return;
+        }
 
-        if (redirectPage) {
-
-            localStorage.removeItem("redirectAfterLogin");
-
-            window.location.href = redirectPage;
-
-        } else {
-
-            window.location.href = "movies.html";
-
+        // CUSTOMER REDIRECTION
+        if (userRole === "CUSTOMER") {
+            window.location.replace("./movies.html");
+            return;
         }
 
     } catch (error) {
-
-        console.error(error);
+        console.error("Login Error:", error);
         alert(error.message);
-
     }
 }
 
 
+// ==============================
 // LOGOUT USER
+// ==============================
 function logoutUser() {
-
     localStorage.removeItem("token");
     localStorage.removeItem("tokenType");
     localStorage.removeItem("userId");
     localStorage.removeItem("userName");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
     localStorage.removeItem("redirectAfterLogin");
 
     window.location.href = "login.html";
 }
 
 
+// ==============================
 // CHECK LOGIN STATUS
+// ==============================
 function isLoggedIn() {
-
     return localStorage.getItem("token") !== null;
-
 }
 
 
+// ==============================
 // OPEN PROTECTED PAGE
+// ==============================
 function openProtectedPage(page) {
-
     if (isLoggedIn()) {
-
         window.location.href = page;
-
     } else {
-
         alert("Please login first to continue.");
 
         localStorage.setItem("redirectAfterLogin", page);
-
         window.location.href = "login.html";
-
     }
 }

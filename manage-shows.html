@@ -1,0 +1,1040 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Shows | TicketBook</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f5f6fa;
+            color: #252b42;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: #172033;
+            color: white;
+            padding: 25px 18px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+            padding: 0 10px 25px;
+            border-bottom: 1px solid #344056;
+            margin-bottom: 30px;
+        }
+
+        .logo i {
+            color: #f5a623;
+            margin-right: 8px;
+        }
+
+        .menu-heading {
+            color: #929db2;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            margin: 25px 10px 12px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 7px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 13px 14px;
+            color: #c5ccda;
+            text-decoration: none;
+            border-radius: 7px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav-links a i {
+            width: 18px;
+            text-align: center;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: #f5a623;
+            color: #172033;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .topbar h2 {
+            font-size: 25px;
+            margin-bottom: 7px;
+        }
+
+        .topbar p {
+            color: #8991a4;
+            font-size: 14px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+        }
+
+        .admin-profile i {
+            color: #f5a623;
+            font-size: 23px;
+        }
+
+        .admin-profile span {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        /* FORM CARD */
+        .content-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.04);
+            margin-bottom: 25px;
+        }
+
+        .card-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            gap: 10px;
+        }
+
+        .card-heading h3 {
+            font-size: 18px;
+        }
+
+        .card-heading i {
+            color: #f5a623;
+            margin-right: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #424b60;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dfe3eb;
+            border-radius: 7px;
+            outline: none;
+            font-size: 14px;
+            background: white;
+            color: #252b42;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #f5a623;
+            box-shadow: 0 0 0 2px rgba(245,166,35,0.12);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 7px;
+            background: #f5a623;
+            color: #172033;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #e69713;
+        }
+
+        .btn i {
+            margin-right: 7px;
+        }
+
+        .form-actions {
+            margin-top: 20px;
+        }
+
+        /* TABLE */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        thead {
+            background: #f8f9fc;
+        }
+
+        th {
+            color: #8991a4;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
+            padding: 15px 12px;
+        }
+
+        td {
+            padding: 15px 12px;
+            font-size: 13px;
+            border-bottom: 1px solid #edf0f5;
+            color: #424b60;
+        }
+
+        tbody tr:hover {
+            background: #fafbfe;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status.cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status.completed {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status.other {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .message {
+            display: none;
+            padding: 12px 15px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+
+        .message.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .message.error {
+            display: block;
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 25px;
+            color: #8991a4;
+        }
+
+        .refresh-btn {
+            background: #172033;
+            color: white;
+            padding: 9px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .refresh-btn:hover {
+            background: #293750;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 70px;
+                padding: 20px 10px;
+            }
+
+            .logo {
+                font-size: 0;
+                text-align: center;
+                padding: 0 0 20px;
+            }
+
+            .logo i {
+                font-size: 23px;
+                margin: 0;
+            }
+
+            .menu-heading,
+            .nav-links a span {
+                display: none;
+            }
+
+            .nav-links a {
+                justify-content: center;
+                padding: 14px 5px;
+            }
+
+            .nav-links a i {
+                font-size: 17px;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+                padding: 20px 14px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .topbar h2 {
+                font-size: 21px;
+            }
+
+            .admin-profile {
+                padding: 9px;
+            }
+
+            .admin-profile span {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+
+            .content-card {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <i class="fa-solid fa-ticket"></i> TicketBook
+        </div>
+
+        <p class="menu-heading">Main Menu</p>
+
+        <ul class="nav-links">
+            <li>
+                <a href="admin-dashboard.html">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-movies.html">
+                    <i class="fa-solid fa-film"></i>
+                    <span>Manage Movies</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-theatres.html">
+                    <i class="fa-solid fa-building"></i>
+                    <span>Manage Theatres</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-screens.html">
+                    <i class="fa-solid fa-tv"></i>
+                    <span>Manage Screens</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-seats.html">
+                    <i class="fa-solid fa-chair"></i>
+                    <span>Manage Seats</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-shows.html" class="active">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Manage Shows</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="manage-bookings.html">
+                    <i class="fa-solid fa-ticket"></i>
+                    <span>Manage Bookings</span>
+                </a>
+            </li>
+        </ul>
+
+        <p class="menu-heading">Account</p>
+
+        <ul class="nav-links">
+            <li>
+                <a href="#" onclick="logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <div class="topbar">
+            <div>
+                <h2>Manage Shows</h2>
+                <p>Create and manage movie shows</p>
+            </div>
+
+            <div class="admin-profile">
+                <i class="fa-solid fa-circle-user"></i>
+                <span id="adminName">Administrator</span>
+            </div>
+        </div>
+
+        <!-- MESSAGE -->
+        <div id="message" class="message"></div>
+
+        <!-- ADD SHOW FORM -->
+        <section class="content-card">
+
+            <div class="card-heading">
+                <h3>
+                    <i class="fa-solid fa-calendar-plus"></i>
+                    Add New Show
+                </h3>
+            </div>
+
+            <form id="showForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="movieId">Select Movie</label>
+                        <select id="movieId" required>
+                            <option value="">Loading movies...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="theatreId">Select Theatre</label>
+                        <select id="theatreId" required>
+                            <option value="">Loading theatres...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="screenId">Select Screen</label>
+                        <select id="screenId" required disabled>
+                            <option value="">Select theatre first</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="basePrice">Ticket Price (₹)</label>
+                        <input type="number"
+                               id="basePrice"
+                               min="1"
+                               step="0.01"
+                               placeholder="Enter ticket price"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startTime">Show Start Time</label>
+                        <input type="datetime-local"
+                               id="startTime"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endTime">Show End Time</label>
+                        <input type="datetime-local"
+                               id="endTime"
+                               required>
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn" id="submitBtn">
+                        <i class="fa-solid fa-plus"></i>
+                        Add Show
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+        <!-- SHOW LIST -->
+        <section class="content-card">
+
+            <div class="card-heading">
+                <h3>
+                    <i class="fa-solid fa-list"></i>
+                    All Shows
+                </h3>
+
+                <button class="refresh-btn" onclick="loadShows()">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Movie</th>
+                            <th>Screen</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="showTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-message">
+                                Loading shows...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+    const API_BASE = "http://localhost:8080/api/v1";
+
+    // ADMIN AUTHENTICATION
+    const token = localStorage.getItem("token");
+    const userRole = localStorage.getItem("userRole");
+
+    if (!token || userRole !== "ADMIN") {
+        alert("Access denied! Please login as admin.");
+        window.location.href = "login.html";
+    }
+
+    document.getElementById("adminName").textContent =
+        localStorage.getItem("userName") || "Administrator";
+
+    function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("tokenType");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userRole");
+
+        window.location.href = "login.html";
+    }
+
+    // COMMON API FUNCTION
+    async function apiRequest(url, options = {}) {
+
+        const tokenType = localStorage.getItem("tokenType") || "Bearer";
+        const token = localStorage.getItem("token");
+
+        const headers = {
+            "Content-Type": "application/json",
+            ...options.headers
+        };
+
+        if (token) {
+            headers["Authorization"] = `${tokenType} ${token}`;
+        }
+
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
+
+        const responseText = await response.text();
+
+        let data = null;
+
+        if (responseText) {
+            try {
+                data = JSON.parse(responseText);
+            } catch {
+                data = responseText;
+            }
+        }
+
+        if (!response.ok) {
+            const errorMessage =
+                typeof data === "string"
+                    ? data
+                    : data?.message || data?.error || `Request failed (${response.status})`;
+
+            throw new Error(errorMessage);
+        }
+
+        return data;
+    }
+
+    // SHOW MESSAGE
+    function showMessage(message, type) {
+        const messageBox = document.getElementById("message");
+
+        messageBox.textContent = message;
+        messageBox.className = "message " + type;
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        setTimeout(() => {
+            messageBox.className = "message";
+        }, 5000);
+    }
+
+    // LOAD MOVIES
+    async function loadMovies() {
+
+        const movieSelect = document.getElementById("movieId");
+
+        try {
+            const movies = await apiRequest(`${API_BASE}/movies`);
+
+            movieSelect.innerHTML =
+                '<option value="">Select Movie</option>';
+
+            if (!Array.isArray(movies) || movies.length === 0) {
+                movieSelect.innerHTML =
+                    '<option value="">No movies available</option>';
+                return;
+            }
+
+            movies.forEach(movie => {
+
+                const option = document.createElement("option");
+
+                option.value = movie.id;
+                option.textContent = movie.title;
+
+                movieSelect.appendChild(option);
+            });
+
+        } catch (error) {
+            movieSelect.innerHTML =
+                '<option value="">Unable to load movies</option>';
+
+            showMessage("Error loading movies: " + error.message, "error");
+        }
+    }
+
+    // LOAD THEATRES
+    async function loadTheatres() {
+
+        const theatreSelect = document.getElementById("theatreId");
+
+        try {
+            const theatres = await apiRequest(`${API_BASE}/theatres`);
+
+            theatreSelect.innerHTML =
+                '<option value="">Select Theatre</option>';
+
+            if (!Array.isArray(theatres) || theatres.length === 0) {
+                theatreSelect.innerHTML =
+                    '<option value="">No theatres available</option>';
+                return;
+            }
+
+            theatres.forEach(theatre => {
+
+                const option = document.createElement("option");
+
+                option.value = theatre.id;
+                option.textContent =
+                    `${theatre.name} - ${theatre.city}`;
+
+                theatreSelect.appendChild(option);
+            });
+
+        } catch (error) {
+            theatreSelect.innerHTML =
+                '<option value="">Unable to load theatres</option>';
+
+            showMessage("Error loading theatres: " + error.message, "error");
+        }
+    }
+
+    // LOAD SCREENS WHEN THEATRE IS SELECTED
+    document.getElementById("theatreId").addEventListener("change", async function () {
+
+        const theatreId = this.value;
+        const screenSelect = document.getElementById("screenId");
+
+        screenSelect.innerHTML =
+            '<option value="">Loading screens...</option>';
+
+        screenSelect.disabled = true;
+
+        if (!theatreId) {
+            screenSelect.innerHTML =
+                '<option value="">Select theatre first</option>';
+            return;
+        }
+
+        try {
+
+            const screens = await apiRequest(
+                `${API_BASE}/screens/theatre/${theatreId}`
+            );
+
+            screenSelect.innerHTML =
+                '<option value="">Select Screen</option>';
+
+            if (!Array.isArray(screens) || screens.length === 0) {
+                screenSelect.innerHTML =
+                    '<option value="">No screens available</option>';
+                return;
+            }
+
+            screens.forEach(screen => {
+
+                const option = document.createElement("option");
+
+                option.value = screen.id;
+                option.textContent =
+                    `${screen.screenName} (Capacity: ${screen.capacity})`;
+
+                screenSelect.appendChild(option);
+            });
+
+            screenSelect.disabled = false;
+
+        } catch (error) {
+
+            screenSelect.innerHTML =
+                '<option value="">Unable to load screens</option>';
+
+            showMessage("Error loading screens: " + error.message, "error");
+        }
+    });
+
+    // ADD NEW SHOW
+    document.getElementById("showForm").addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const movieId = Number(document.getElementById("movieId").value);
+        const screenId = Number(document.getElementById("screenId").value);
+        const startTime = document.getElementById("startTime").value;
+        const endTime = document.getElementById("endTime").value;
+        const basePrice = Number(document.getElementById("basePrice").value);
+
+        if (!movieId || !screenId) {
+            showMessage("Please select a movie and screen.", "error");
+            return;
+        }
+
+        if (new Date(endTime) <= new Date(startTime)) {
+            showMessage("End time must be after start time.", "error");
+            return;
+        }
+
+        if (!Number.isFinite(basePrice) || basePrice <= 0) {
+            showMessage("Please enter a valid ticket price.", "error");
+            return;
+        }
+
+        const showData = {
+            movieId: movieId,
+            screenId: screenId,
+            startTime: startTime,
+            endTime: endTime,
+            basePrice: basePrice
+        };
+
+        const submitBtn = document.getElementById("submitBtn");
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Adding Show...";
+
+        try {
+
+            await apiRequest(`${API_BASE}/shows`, {
+                method: "POST",
+                body: JSON.stringify(showData)
+            });
+
+            showMessage("Show added successfully!", "success");
+
+            this.reset();
+
+            document.getElementById("screenId").innerHTML =
+                '<option value="">Select theatre first</option>';
+
+            document.getElementById("screenId").disabled = true;
+
+            await loadShows();
+
+        } catch (error) {
+
+            showMessage("Unable to add show: " + error.message, "error");
+
+        } finally {
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML =
+                '<i class="fa-solid fa-plus"></i> Add Show';
+        }
+    });
+
+    // FORMAT DATE AND TIME
+    function formatDateTime(dateTime) {
+
+        if (!dateTime) {
+            return "-";
+        }
+
+        const date = new Date(dateTime);
+
+        if (Number.isNaN(date.getTime())) {
+            return dateTime;
+        }
+
+        return date.toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    // STATUS BADGE
+    function getStatusClass(status) {
+
+        const value = String(status || "").toUpperCase();
+
+        if (value === "CANCELLED") {
+            return "cancelled";
+        }
+
+        if (value === "COMPLETED") {
+            return "completed";
+        }
+
+        if (value === "SCHEDULED" || value === "AVAILABLE") {
+            return "";
+        }
+
+        return "other";
+    }
+
+    // LOAD ALL SHOWS
+    async function loadShows() {
+
+        const tableBody = document.getElementById("showTableBody");
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-message">Loading shows...</td>
+            </tr>
+        `;
+
+        try {
+
+            const shows = await apiRequest(`${API_BASE}/shows`);
+
+            tableBody.innerHTML = "";
+
+            if (!Array.isArray(shows) || shows.length === 0) {
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-message">
+                            No shows found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+            shows.forEach(show => {
+
+                const row = document.createElement("tr");
+
+                const statusClass = getStatusClass(show.status);
+
+                const status = document.createElement("span");
+                status.className = `status ${statusClass}`;
+                status.textContent = show.status || "N/A";
+
+                const values = [
+                    show.id ?? "-",
+                    show.movieTitle || "-",
+                    show.screenName || "-",
+                    formatDateTime(show.startTime),
+                    formatDateTime(show.endTime),
+                    show.basePrice != null
+                        ? "₹" + Number(show.basePrice).toFixed(2)
+                        : "-"
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                const statusCell = document.createElement("td");
+                statusCell.appendChild(status);
+                row.appendChild(statusCell);
+
+                tableBody.appendChild(row);
+            });
+
+        } catch (error) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-message">
+                        Unable to load shows: ${escapeHTML(error.message)}
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    // ESCAPE ERROR TEXT
+    function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[character]);
+    }
+
+    // INITIAL LOAD
+    document.addEventListener("DOMContentLoaded", async function () {
+        await Promise.all([
+            loadMovies(),
+            loadTheatres(),
+            loadShows()
+        ]);
+    });
+</script>
+
+</body>
+</html>
