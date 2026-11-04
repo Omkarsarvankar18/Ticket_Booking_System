@@ -1,3 +1,4 @@
+
 package com.example.ticket_booking_system.service;
 
 import java.util.List;
@@ -19,33 +20,38 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ScreenService {
-	
-	private final ScreenRepository screenRepository;
-	private final TheatreRepository theatreRepository;
-	private final ModelMapper modelMapper;
-	
-	public ScreenResponseDTO addScreen(Long theatreId, ScreenRequestDTO requestDTO) {
-		Theatre theatre = theatreRepository.findById(theatreId).orElseThrow(()-> new ResourcesNotFound("Theatre nor found"));
-		
-	Screen screen =	modelMapper.map(requestDTO, Screen.class);
-	//important line 
-	screen.setTheatre(theatre);
-	
-	Screen Savedscreen = screenRepository.save(screen);
-	return modelMapper.map(Savedscreen, ScreenResponseDTO.class);
-	
-	}
-	
-	// Get Screens By Theatre ID
+
+    private final ScreenRepository screenRepository;
+    private final TheatreRepository theatreRepository;
+    private final ModelMapper modelMapper;
+
+    // Add Screen
+    public ScreenResponseDTO addScreen(ScreenRequestDTO requestDTO) {
+
+        // Find theatre using theatreId from request DTO
+        Theatre theatre = theatreRepository.findById(requestDTO.getTheatreId())
+                .orElseThrow(() -> new ResourcesNotFound("Theatre not found"));
+
+        // Convert DTO into Screen entity
+        Screen screen = modelMapper.map(requestDTO, Screen.class);
+
+        // Set theatre relationship
+        screen.setTheatre(theatre);
+
+        // Save screen
+        Screen savedScreen = screenRepository.save(screen);
+
+        // Convert entity into response DTO
+        return modelMapper.map(savedScreen, ScreenResponseDTO.class);
+    }
+
+    // Get Screens By Theatre ID
     public List<ScreenResponseDTO> getScreensByTheatreId(Long theatreId) {
 
-        List<Screen> screens =
-                screenRepository.findByTheatre_Id(theatreId);
+        List<Screen> screens = screenRepository.findByTheatre_Id(theatreId);
 
         return screens.stream()
                 .map(screen -> modelMapper.map(screen, ScreenResponseDTO.class))
                 .collect(Collectors.toList());
     }
-	
-
 }

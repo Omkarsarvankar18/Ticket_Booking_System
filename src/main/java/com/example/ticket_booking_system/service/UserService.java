@@ -16,36 +16,37 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-	
-	private final UserRepository userRepository;
-	private final ModelMapper modelMapper;
-	
-	public UserResponseDTO getMyProfile(String email) {
-		User user = userRepository.findByEmail(email).orElseThrow(()->new ResourcesNotFound("Email Not Found"));
-		return modelMapper.map(user, UserResponseDTO.class);
-	}
-	
-	public UserResponseDTO updateMyProfile(String email, UserUpdateRequestDTO requestDTO) {
-	User user =	userRepository.findByEmail(email).orElseThrow(()-> new ResourcesNotFound("Email Not Found"));
-	modelMapper.map(requestDTO, User.class);
-	
-	User savedUser = userRepository.save(user);
-	
-	return modelMapper.map(savedUser, UserResponseDTO.class);
-	
-	
-	}
-		
-	public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
 
-        return userRepository.findAll(pageable) // map present in Page
-                .map(user -> modelMapper.map(
-                        user, UserResponseDTO.class));// Converting user into UserResponseDTO
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
+
+    // Get logged-in user's profile
+    public UserResponseDTO getMyProfile(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourcesNotFound("Email Not Found"));
+
+        return modelMapper.map(user, UserResponseDTO.class);
     }
-		
-		
-		
-	
 
-	
+    // Update logged-in user's profile
+    public UserResponseDTO updateMyProfile(String email, UserUpdateRequestDTO requestDTO) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourcesNotFound("Email Not Found"));
+
+        // Update the existing user object
+        modelMapper.map(requestDTO, user);
+
+        User savedUser = userRepository.save(user);
+
+        return modelMapper.map(savedUser, UserResponseDTO.class);
+    }
+
+    // Get all users with pagination
+    public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
+
+        return userRepository.findAll(pageable)
+                .map(user -> modelMapper.map(user, UserResponseDTO.class));
+    }
 }

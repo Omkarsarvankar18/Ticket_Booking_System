@@ -1,8 +1,7 @@
+
 package com.example.ticket_booking_system.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,13 +13,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SeatRequestDTO {
 
-    @NotBlank
+    @NotBlank(message = "Seat number is required")
     private String seatNumber;
 
-    @NotBlank
+    @NotBlank(message = "Seat type is required")
     private String seatType;
-
-//    @NotNull
-//    @Positive
-//    private Long screenId;
 }

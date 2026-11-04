@@ -1,3 +1,4 @@
+
 package com.example.ticket_booking_system.service;
 
 import org.modelmapper.ModelMapper;
@@ -27,6 +28,7 @@ public class AuthService {
     private final ModelMapper modelMapper;
     private final JwtService jwtService;
 
+    // Register User
     public UserResponseDTO register(RegisterRequestDTO requestDTO) {
 
         if (userRepository.existsByEmail(requestDTO.getEmail())) {
@@ -39,6 +41,7 @@ public class AuthService {
         user.setPassword(
                 passwordEncoder.encode(requestDTO.getPassword()));
 
+        // Every public registration gets CUSTOMER role
         user.setRole(UserRole.CUSTOMER);
 
         User savedUser = userRepository.save(user);
@@ -46,6 +49,7 @@ public class AuthService {
         return modelMapper.map(savedUser, UserResponseDTO.class);
     }
 
+    // Login User
     public AuthResponseDTO login(LoginRequestDTO requestDTO) {
 
         // Authenticate user
@@ -56,18 +60,20 @@ public class AuthService {
 
         // Fetch user from database
         User user = userRepository.findByEmail(requestDTO.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
 
         // Generate JWT token
         String token = jwtService.generateToken(user.getEmail());
 
-        // Return user details and token
+        // Return user details, token and role
         return new AuthResponseDTO(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
                 token,
-                "Bearer"
+                "Bearer",
+                user.getRole().name()
         );
     }
 }

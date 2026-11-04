@@ -35,16 +35,27 @@ public class BookingController {
         BookingResponseDTO responseDTO =
                 bookingService.createBooking(userId, bookingRequestDTO);
 
-        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                responseDTO, HttpStatus.CREATED);
     }
 
-    // Get all bookings of a customer
+    // Get bookings by customer ID
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<BookingResponseDTO>> getBookingsByUserId(
             @PathVariable Long userId) {
 
         List<BookingResponseDTO> bookings =
                 bookingService.getBookingsByUserId(userId);
+
+        return ResponseEntity.ok(bookings);
+    }
+
+    // ADMIN: Get all customer bookings
+    @GetMapping
+    public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
+
+        List<BookingResponseDTO> bookings =
+                bookingService.getAllBookings();
 
         return ResponseEntity.ok(bookings);
     }

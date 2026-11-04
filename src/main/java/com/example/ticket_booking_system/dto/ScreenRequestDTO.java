@@ -1,3 +1,4 @@
+
 package com.example.ticket_booking_system.dto;
 
 import jakarta.validation.constraints.NotBlank;
@@ -21,8 +22,7 @@ public class ScreenRequestDTO {
     @Positive
     private Integer capacity;
 
-//    //later we need to delete
-//    @NotNull
-//    @Positive
-//    private Long theatreId;
+    @NotNull
+    @Positive
+    private Long theatreId;
 }
