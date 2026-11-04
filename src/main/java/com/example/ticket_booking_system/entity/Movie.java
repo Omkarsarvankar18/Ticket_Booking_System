@@ -1,3 +1,4 @@
+
 package com.example.ticket_booking_system.entity;
 
 import java.time.LocalDate;
@@ -16,24 +17,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="movies")
+@Table(name = "movies")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Movie {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Long id;
-	private String title;
-	private String description;
-	private String genre;
-	private String language;
-	private Integer duration;
-	private LocalDate releaseDate;
-	private String certificate;
-	
-	@Enumerated(EnumType.STRING)
-	private Status status;
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    private String title;
+    private String description;
+    private String genre;
+    private String language;
+    private Integer duration;
+    private LocalDate releaseDate;
+    private String certificate;
+
+    // Movie poster image URL
+    private String posterUrl;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }

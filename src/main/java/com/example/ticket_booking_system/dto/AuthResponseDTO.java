@@ -1,3 +1,4 @@
+
 package com.example.ticket_booking_system.dto;
 
 import lombok.AllArgsConstructor;
@@ -16,4 +17,5 @@ public class AuthResponseDTO {
     private String email;
     private String token;
     private String tokenType;
+    private String role;
 }

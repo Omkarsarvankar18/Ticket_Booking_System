@@ -1,3 +1,4 @@
+
 package com.example.ticket_booking_system.dto;
 
 import java.time.LocalDate;
@@ -9,21 +10,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class MovieResponseDTO {
 
-	private Long id;
-	private String title;
-	private String description;
-	private String genre;
-	private String language;
-	private Integer duration;
-	private LocalDate releaseDate;
-	private String certificate;
-	private Status status;
+    private Long id;
+    private String title;
+    private String description;
+    private String genre;
+    private String language;
+    private Integer duration;
+    private LocalDate releaseDate;
+    private String certificate;
+    private Status status;
 
+    // Movie poster image URL
+    private String posterUrl;
 }

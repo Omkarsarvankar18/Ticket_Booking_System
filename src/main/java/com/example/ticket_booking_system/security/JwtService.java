@@ -1,3 +1,4 @@
+
 package com.example.ticket_booking_system.security;
 
 import java.util.Date;
@@ -7,49 +8,63 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-	private final SecretKey SECRET_KEY; // Representing Secret Key
-	private final long EXP_TIME = 60*60*24; // Valid for 1 day
-	
-	public JwtService(@Value("${jwt.secret}") String key) {
-		SECRET_KEY= Keys.hmacShaKeyFor(key.getBytes()); // Creating key using HMAC-SHA
-	}
-	
-	public String generateToken(String username) {
-		return Jwts.builder()// Start building token
-		.setSubject(username) // Adding username as Subject 
-		.setIssuedAt(new Date(System.currentTimeMillis()))// setting current time in Milliseconds
-		.setExpiration(new Date(System.currentTimeMillis()// setting Exp time in Milliseconds
-				+EXP_TIME))
-		.signWith(SECRET_KEY)// Adding SECRET_KEY for creating signature  
-		.compact(); // Returns final token
-	}
-	
-	
-	public String getUserName(String token) {
-		return Jwts.parser()// Building JwtParser
-		.setSigningKey(SECRET_KEY) // Setting SECRET_KEY for Validating token 
-		.build()                   // Creates JwtParser
-		.parseClaimsJws(token)     // Parsing token and validating token
-		.getBody()                 // Returns JWT payload
-		.getSubject();             // Returns Username
-	}
-	
-	// Returns true if the Token is Valid
-	public boolean validateToken(String token) {
-		try {
-			Jwts.parser()       // Building JwtParser
-			.setSigningKey(SECRET_KEY) // Setting SECRET_KEY for Validating token
-			.build()                   // Creates JwtParser
-			.parseClaimsJws(token);    // Parsing token and validating token
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
 
+    private final SecretKey SECRET_KEY;
+
+    // JWT token expiration time: 24 hours
+    private final long EXP_TIME = 1000L * 60 * 60 * 24;
+
+    // Constructor: Generate Secret Key
+    public JwtService(@Value("${jwt.secret}") String key) {
+        SECRET_KEY = Keys.hmacShaKeyFor(key.getBytes());
+    }
+
+    // Generate JWT Token
+    public String generateToken(String username) {
+
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXP_TIME))
+                .signWith(SECRET_KEY)
+                .compact();
+    }
+
+    // Extract Username from JWT Token
+    public String getUserName(String token) {
+
+        Claims claims = Jwts.parser()
+                .verifyWith(SECRET_KEY)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return claims.getSubject();
+    }
+
+    // Validate JWT Token
+    public boolean validateToken(String token) {
+
+        try {
+
+            Jwts.parser()
+                    .verifyWith(SECRET_KEY)
+                    .build()
+                    .parseSignedClaims(token);
+
+            return true;
+
+        } catch (Exception e) {
+
+            System.out.println("JWT Validation Failed: " + e.getMessage());
+
+            return false;
+        }
+    }
 }

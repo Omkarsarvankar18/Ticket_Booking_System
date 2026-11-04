@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +41,11 @@ public class BookingService {
     private final ShowRepository showRepository;
     private final ShowSeatRepository showSeatRepository;
     private final BookingSeatRepository bookingSeatRepository;
-
     private final ModelMapper modelMapper;
+
+    // ==========================================
+    // CREATE BOOKING
+    // ==========================================
 
     @Transactional
     public BookingResponseDTO createBooking(
@@ -66,7 +70,7 @@ public class BookingService {
                     "This show is not available for booking");
         }
 
-        // Validate all selected seats
+        // Validate selected seats
         List<ShowSeat> showSeats = new ArrayList<>();
 
         for (Long showSeatId : bookingRequestDTO.getShowSeatIds()) {
@@ -91,12 +95,12 @@ public class BookingService {
             showSeats.add(showSeat);
         }
 
-        // Calculate total booking amount
+        // Calculate total amount
         BigDecimal totalAmount = showSeats.stream()
                 .map(ShowSeat::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Create one booking
+        // Create booking
         Booking booking = new Booking();
 
         booking.setCustomer(user);
@@ -112,7 +116,7 @@ public class BookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        // Create BookingSeat records
+        // Create booking seats
         List<BookingSeat> bookingSeats = new ArrayList<>();
 
         for (ShowSeat showSeat : showSeats) {
@@ -129,11 +133,11 @@ public class BookingService {
             showSeat.setStatus(SeatStatus.BOOKED);
         }
 
-        // Save booking seats and update show seats
+        // Save booking seats
         bookingSeatRepository.saveAll(bookingSeats);
         showSeatRepository.saveAll(showSeats);
 
-        // Convert Booking entity to response DTO
+        // Convert entity to DTO
         BookingResponseDTO responseDTO =
                 modelMapper.map(savedBooking, BookingResponseDTO.class);
 
@@ -143,57 +147,107 @@ public class BookingService {
 
         return responseDTO;
     }
-    
 
+    // ==========================================
+    // GET BOOKINGS BY CUSTOMER ID
+    // ==========================================
 
-@Transactional(readOnly = true)
-public List<BookingResponseDTO> getBookingsByUserId(Long userId) {
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getBookingsByUserId(Long userId) {
 
-    // Check whether customer exists
-    User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResourcesNotFound(
-                    "User not found with ID: " + userId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourcesNotFound(
+                        "User not found with ID: " + userId));
 
-    // Fetch all customer bookings
-    List<Booking> bookings =
-            bookingRepository.findByCustomer_IdOrderByBookingDateTimeDesc(userId);
+        List<Booking> bookings =
+                bookingRepository.findByCustomer_IdOrderByBookingDateTimeDesc(userId);
 
-    // Convert bookings into response DTOs
-    return bookings.stream().map(booking -> {
+        return bookings.stream().map(booking -> {
 
-        BookingResponseDTO responseDTO =
-                modelMapper.map(booking, BookingResponseDTO.class);
+            BookingResponseDTO responseDTO =
+                    modelMapper.map(booking, BookingResponseDTO.class);
 
-        // Customer details
-        responseDTO.setCustomerId(user.getId());
-        responseDTO.setCustomerName(user.getName());
+            responseDTO.setCustomerId(user.getId());
+            responseDTO.setCustomerName(user.getName());
 
-        // Show details
-        Show show = booking.getShow();
+            Show show = booking.getShow();
 
-        responseDTO.setShowId(show.getId());
-        responseDTO.setMovieTitle(show.getMovie().getTitle());
-        responseDTO.setTheatreName(
-                show.getScreen().getTheatre().getName());
-        responseDTO.setScreenName(
-                show.getScreen().getScreenName());
-        responseDTO.setShowStartTime(show.getStartTime());
+            responseDTO.setShowId(show.getId());
+            responseDTO.setMovieTitle(show.getMovie().getTitle());
 
-        // Retrieve booked seats
-        List<BookingSeat> bookingSeats =
-                bookingSeatRepository.findByBookingId(booking.getId());
+            responseDTO.setTheatreName(
+                    show.getScreen().getTheatre().getName());
 
-        List<String> seatNumbers = bookingSeats.stream()
-                .map(bookingSeat -> bookingSeat.getShowSeat()
-                        .getSeat().getSeatNumber())
-                .collect(Collectors.toList());
+            responseDTO.setScreenName(
+                    show.getScreen().getScreenName());
 
-        responseDTO.setSeatNumbers(seatNumbers);
+            responseDTO.setShowStartTime(show.getStartTime());
 
-        return responseDTO;
+            List<BookingSeat> bookingSeats =
+                    bookingSeatRepository.findByBookingId(booking.getId());
 
-    }).collect(Collectors.toList());
-}
+            List<String> seatNumbers = bookingSeats.stream()
+                    .map(bookingSeat ->
+                            bookingSeat.getShowSeat()
+                                    .getSeat().getSeatNumber())
+                    .collect(Collectors.toList());
 
+            responseDTO.setSeatNumbers(seatNumbers);
 
+            return responseDTO;
+
+        }).collect(Collectors.toList());
+    }
+
+    // ==========================================
+    // ADMIN: GET ALL BOOKINGS
+    // ==========================================
+
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getAllBookings() {
+
+        List<Booking> bookings = bookingRepository.findAll(
+                Sort.by(Sort.Direction.DESC, "bookingDateTime"));
+
+        return bookings.stream().map(booking -> {
+
+            BookingResponseDTO responseDTO =
+                    modelMapper.map(booking, BookingResponseDTO.class);
+
+            // Customer details
+            User user = booking.getCustomer();
+
+            responseDTO.setCustomerId(user.getId());
+            responseDTO.setCustomerName(user.getName());
+
+            // Show details
+            Show show = booking.getShow();
+
+            responseDTO.setShowId(show.getId());
+            responseDTO.setMovieTitle(show.getMovie().getTitle());
+
+            responseDTO.setTheatreName(
+                    show.getScreen().getTheatre().getName());
+
+            responseDTO.setScreenName(
+                    show.getScreen().getScreenName());
+
+            responseDTO.setShowStartTime(show.getStartTime());
+
+            // Booked seats
+            List<BookingSeat> bookingSeats =
+                    bookingSeatRepository.findByBookingId(booking.getId());
+
+            List<String> seatNumbers = bookingSeats.stream()
+                    .map(bookingSeat ->
+                            bookingSeat.getShowSeat()
+                                    .getSeat().getSeatNumber())
+                    .collect(Collectors.toList());
+
+            responseDTO.setSeatNumbers(seatNumbers);
+
+            return responseDTO;
+
+        }).collect(Collectors.toList());
+    }
 }

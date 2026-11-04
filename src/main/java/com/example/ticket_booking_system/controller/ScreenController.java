@@ -1,15 +1,11 @@
+
 package com.example.ticket_booking_system.controller;
 
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.ticket_booking_system.dto.ScreenRequestDTO;
 import com.example.ticket_booking_system.dto.ScreenResponseDTO;
@@ -19,18 +15,24 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/theatres/{theatreId}/screens")
+@RequestMapping("/api/v1/screens")
 @RequiredArgsConstructor
 public class ScreenController {
-	private final ScreenService screenService;
-	
-	@PostMapping
-	public ResponseEntity<ScreenResponseDTO> addScreen(@PathVariable Long theatreId, @Valid @RequestBody ScreenRequestDTO screenRequestDTO){
-		return new ResponseEntity<ScreenResponseDTO>(screenService.addScreen(theatreId, screenRequestDTO), HttpStatus.CREATED);
-	}
-	
-	// Get screens by theatre ID
-    @GetMapping
+
+    private final ScreenService screenService;
+
+    // Add Screen
+    @PostMapping
+    public ResponseEntity<ScreenResponseDTO> addScreen(
+            @Valid @RequestBody ScreenRequestDTO screenRequestDTO) {
+
+        return new ResponseEntity<>(
+                screenService.addScreen(screenRequestDTO),
+                HttpStatus.CREATED);
+    }
+
+    // Get All Screens By Theatre ID
+    @GetMapping("/theatre/{theatreId}")
     public ResponseEntity<List<ScreenResponseDTO>> getScreensByTheatreId(
             @PathVariable Long theatreId) {
 
@@ -38,5 +40,4 @@ public class ScreenController {
                 screenService.getScreensByTheatreId(theatreId),
                 HttpStatus.OK);
     }
-
 }
