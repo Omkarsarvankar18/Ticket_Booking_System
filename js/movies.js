@@ -3,42 +3,50 @@ const MOVIE_API_URL = "http://localhost:8080/api/v1/movies";
 
 let allMovies = [];
 
-// Online movie poster URLs
-const moviePosters = {
-    "vikram": "https://www.behindwoods.com/uploads/62e27170ce3c0.jpeg",
-
-    "rrr": "https://m.media-amazon.com/images/M/MV5BODUwNDNjYzctODUxNy00ZTA2LWIyYTEtMDc5Y2E5ZjBmNTMzXkEyXkFqcGdeQXVyODE5NzE3OTE%40._V1_FMjpg_UX1000_.jpg",
-
-    "3 idiots": "https://www.cinema.de/sites/default/files/styles/schema_org/public/sync/img.tvspielfilm.de/0c/fe/12/59ae7997f033af223612fe0c.jpeg?itok=5PzFNVor",
-
-    "inception": "https://artofthemovies.co.uk/cdn/shop/files/inception_advance_SD18120_B-731214_920c5dfe-8d66-47c7-af74-11b98a83ebbf_1024x1024%402x.jpg?v=1737545739",
-
-    "interstellar": "https://cdn.ome.lt/legacy/images/galerias/Interstellar/Interstellar-Poster-18Set2014-1.jpg",
-
-    "drishyam": "https://m.media-amazon.com/images/M/MV5BZDZkM2U0Y2ItMTAwOC00MTc3LWI5NTQtZTk3Yjc2NGI5MWYzXkEyXkFqcGc%40._V1_FMjpg_UX1000_.jpg",
-
-    "dangal": "https://images.fandango.com/ImageRenderer/0/0/redesign/static/img/default_poster.png/0/images/masterrepository/fandango/198210/dangal-posterart.jpg",
-
-    "the conjuring": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHSnZhpr2P_xN0GmbSlbaRUN_c7TQp1_uhKdIpbjG7WlZ3Jk_gD048-QQC&s=1024",
-    
-    "leo": "https://mir-s3-cdn-cf.behance.net/project_modules/1400_webp/60c78e182523101.652f4bf99216b.jpg"
-};
-
-// Default poster
+// Default poster when no poster is available
 const DEFAULT_POSTER =
     "https://placehold.co/500x750/252044/ffffff?text=Poster+Unavailable";
 
+// OLD MOVIE POSTERS - Keep these as your fallback posters
+const moviePosters = {
+    "vikram": "https://www.behindwoods.com/uploads/62e27170ce3c0.jpeg",
 
-// Get poster based on movie title
-function getMoviePoster(title) {
+    "rrr": "https://image.tmdb.org/t/p/w500/nEufeZlyAOLqO2brrs0yeF1lgXO.jpg",
 
-    const movieTitle = (title || "").toLowerCase().trim();
+    "3 idiots": "https://image.tmdb.org/t/p/w500/66A9MqXOyVFCssoloscw79z8Tew.jpg",
+
+    "inception": "https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
+
+    "interstellar": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+
+    "drishyam": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRE7T7F4y7gL_rzFbpv48CdEitsaxyJmYYeanPA9DYKLa46KJnW_B2BYPtgj0EbdSEdbw4FfQ&s=10",
+
+    "dangal": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrAj3X3l8pHj2TRRj7XL_6dz-pzxXeM6fZfKxhESWAKXnDJUMv7rA8BwMIbJSsfSHpHWrh&s=10",
+
+    "the conjuring": "https://image.tmdb.org/t/p/w500/wVYREutTvI2tmxr6ujrHT704wGF.jpg",
+
+    "leo": "https://i.pinimg.com/736x/46/37/db/4637dbeccdf457d9086f4e19e3737863.jpg"
+};
+
+
+// GET POSTER
+// Priority 1: Poster URL added by Admin
+// Priority 2: Old hardcoded poster
+// Priority 3: Default poster
+
+function getMoviePoster(movie) {
+
+    if (movie.posterUrl && movie.posterUrl.trim() !== "") {
+        return movie.posterUrl.trim();
+    }
+
+    const movieTitle = (movie.title || "").toLowerCase().trim();
 
     return moviePosters[movieTitle] || DEFAULT_POSTER;
 }
 
 
-// Fetch all movies from backend
+// FETCH ALL MOVIES FROM BACKEND
 async function loadMovies() {
 
     const movieList = document.getElementById("movieList");
@@ -54,7 +62,15 @@ async function loadMovies() {
             throw new Error("Unable to fetch movies.");
         }
 
-        allMovies = await response.json();
+        const data = await response.json();
+
+        allMovies = Array.isArray(data)
+            ? data
+            : Array.isArray(data.content)
+                ? data.content
+                : Array.isArray(data.data)
+                    ? data.data
+                    : [];
 
         displayMovies(allMovies);
 
@@ -66,11 +82,13 @@ async function loadMovies() {
             "Unable to load movies. Please check whether the backend is running.";
 
         movieList.innerHTML = "";
+
     }
+
 }
 
 
-// Display movies
+// DISPLAY MOVIES
 function displayMovies(movies) {
 
     const movieList = document.getElementById("movieList");
@@ -81,6 +99,7 @@ function displayMovies(movies) {
     if (!movies || movies.length === 0) {
 
         movieMessage.textContent = "No movies found.";
+
         return;
     }
 
@@ -89,69 +108,101 @@ function displayMovies(movies) {
     movies.forEach(movie => {
 
         const movieCard = document.createElement("div");
+
         movieCard.className = "movie-card";
 
-        // Movie poster section
+
+        // MOVIE POSTER
+
         const poster = document.createElement("div");
+
         poster.className = "movie-poster";
 
         const posterImage = document.createElement("img");
-        posterImage.src = getMoviePoster(movie.title);
+
+        posterImage.src = getMoviePoster(movie);
+
         posterImage.alt = `${movie.title || "Movie"} poster`;
 
-        // Fallback if poster URL fails
+        posterImage.loading = "lazy";
+
         posterImage.onerror = function () {
+
             this.onerror = null;
+
             this.src = DEFAULT_POSTER;
+
         };
 
         poster.appendChild(posterImage);
 
-        // Movie details section
+
+        // MOVIE DETAILS
+
         const details = document.createElement("div");
+
         details.className = "movie-details";
 
         const title = document.createElement("h2");
+
         title.textContent = movie.title || "Untitled Movie";
 
         const description = document.createElement("p");
+
         description.className = "movie-description";
+
         description.textContent =
             movie.description || "No description available.";
 
         const genre = document.createElement("p");
+
         genre.textContent = `Genre: ${movie.genre || "N/A"}`;
 
         const language = document.createElement("p");
+
         language.textContent = `Language: ${movie.language || "N/A"}`;
 
         const duration = document.createElement("p");
+
         duration.textContent =
             `Duration: ${movie.duration ?? "N/A"} minutes`;
 
         const certificate = document.createElement("p");
+
         certificate.textContent =
             `Certificate: ${movie.certificate || "N/A"}`;
 
         const releaseDate = document.createElement("p");
+
         releaseDate.textContent =
             `Release Date: ${movie.releaseDate || "N/A"}`;
 
         const status = document.createElement("span");
+
         status.className = "movie-status";
+
         status.textContent = movie.status || "UNKNOWN";
 
+
+        // BOOK TICKETS BUTTON
+
         const bookButton = document.createElement("button");
+
         bookButton.className = "book-movie-btn";
+
         bookButton.textContent = "Book Tickets";
 
-        // Save selected movie and navigate to theatres
         bookButton.addEventListener("click", () => {
 
-            localStorage.setItem("selectedMovie", JSON.stringify(movie));
+            localStorage.setItem(
+                "selectedMovie",
+                JSON.stringify(movie)
+            );
 
             window.location.href = "theatres.html";
+
         });
+
 
         details.append(
             title,
@@ -166,12 +217,16 @@ function displayMovies(movies) {
         );
 
         movieCard.append(poster, details);
+
         movieList.appendChild(movieCard);
+
     });
+
 }
 
 
-// Search movies
+// SEARCH MOVIES
+
 document.getElementById("searchInput").addEventListener("input", function () {
 
     const searchValue = this.value.toLowerCase().trim();
@@ -183,11 +238,14 @@ document.getElementById("searchInput").addEventListener("input", function () {
             (movie.genre || "").toLowerCase().includes(searchValue) ||
             (movie.language || "").toLowerCase().includes(searchValue)
         );
+
     });
 
     displayMovies(filteredMovies);
+
 });
 
 
-// Load movies when page opens
+// LOAD MOVIES WHEN PAGE OPENS
+
 document.addEventListener("DOMContentLoaded", loadMovies);

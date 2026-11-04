@@ -1,7 +1,6 @@
 
 const SHOW_API_URL = "http://localhost:8080/api/v1/shows";
-
-const SCREEN_API_URL = "http://localhost:8080/api/v1/theatres";
+const SCREEN_API_URL = "http://localhost:8080/api/v1/screens";
 
 let selectedMovie;
 let selectedTheatre;
@@ -26,19 +25,15 @@ async function loadShows() {
         return;
     }
 
-    // Display selected movie and theatre
     bookingInfo.textContent =
         `Movie: ${selectedMovie.title} | Theatre: ${selectedTheatre.name}`;
 
-    // Debug selected IDs
     console.log("Selected Movie:", selectedMovie);
-    console.log("Selected Movie ID:", selectedMovie.id);
     console.log("Selected Theatre:", selectedTheatre);
-    console.log("Selected Theatre ID:", selectedTheatre.id);
 
     if (!selectedMovie.id || !selectedTheatre.id) {
         showMessage.textContent =
-            "Movie ID or Theatre ID is missing. Please check your response DTO.";
+            "Movie ID or Theatre ID is missing.";
         return;
     }
 
@@ -47,19 +42,26 @@ async function loadShows() {
         const token = localStorage.getItem("token");
         const tokenType = localStorage.getItem("tokenType") || "Bearer";
 
-        const headers = {};
+        const headers = {
+            "Accept": "application/json"
+        };
 
         if (token) {
             headers["Authorization"] = `${tokenType} ${token}`;
         }
 
-        // 1. Fetch screens for selected theatre
-        const screenResponse = await fetch(
-            `${SCREEN_API_URL}/${selectedTheatre.id}/screens`,
-            { headers }
-        );
+        // 1. Fetch screens using the correct backend endpoint
+        const screenUrl =
+            `${SCREEN_API_URL}/theatre/${selectedTheatre.id}`;
+
+        console.log("Screen API URL:", screenUrl);
+
+        const screenResponse = await fetch(screenUrl, { headers });
 
         if (!screenResponse.ok) {
+            const errorText = await screenResponse.text();
+            console.error("Screen API error:", errorText);
+
             throw new Error(
                 `Unable to fetch screens. HTTP ${screenResponse.status}`
             );
@@ -69,20 +71,22 @@ async function loadShows() {
 
         console.log("Screens received:", screens);
 
-        if (!screens || screens.length === 0) {
+        if (!Array.isArray(screens) || screens.length === 0) {
             showMessage.textContent =
                 "No screens available in this theatre.";
+            showList.innerHTML = "";
             return;
         }
 
         const screenIds = screens.map(screen => Number(screen.id));
 
-        console.log("Screen IDs:", screenIds);
-
         // 2. Fetch all shows
         const showResponse = await fetch(SHOW_API_URL, { headers });
 
         if (!showResponse.ok) {
+            const errorText = await showResponse.text();
+            console.error("Show API error:", errorText);
+
             throw new Error(
                 `Unable to fetch shows. HTTP ${showResponse.status}`
             );
@@ -92,20 +96,20 @@ async function loadShows() {
 
         console.log("All shows received:", shows);
 
-        // 3. Filter shows by movie and theatre screen
+        // 3. Filter shows by selected movie and theatre
         const filteredShows = shows.filter(show => {
 
+            const movieId =
+                show.movieId ?? show.movie?.id;
+
+            const screenId =
+                show.screenId ?? show.screen?.id;
+
             const movieMatches =
-                Number(show.movieId) === Number(selectedMovie.id);
+                Number(movieId) === Number(selectedMovie.id);
 
             const screenMatches =
-                screenIds.includes(Number(show.screenId));
-
-            console.log(
-                `Show ID: ${show.id}`,
-                `Movie Match: ${movieMatches}`,
-                `Screen Match: ${screenMatches}`
-            );
+                screenIds.includes(Number(screenId));
 
             return movieMatches && screenMatches;
         });
@@ -144,8 +148,10 @@ function displayShows(shows, screens) {
 
     shows.forEach(show => {
 
+        const screenId = show.screenId ?? show.screen?.id;
+
         const screen = screens.find(
-            item => Number(item.id) === Number(show.screenId)
+            item => Number(item.id) === Number(screenId)
         );
 
         const card = document.createElement("div");
@@ -157,7 +163,7 @@ function displayShows(shows, screens) {
 
         const movieName = document.createElement("p");
         movieName.textContent =
-            show.movieTitle || selectedMovie.title;
+            show.movieTitle || show.movie?.title || selectedMovie.title;
 
         const startTime = document.createElement("p");
         startTime.textContent =
@@ -224,6 +230,5 @@ function formatDateTime(dateTime) {
         minute: "2-digit"
     });
 }
-
 
 document.addEventListener("DOMContentLoaded", loadShows);
