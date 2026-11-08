@@ -1,7 +1,6 @@
 
 package com.example.ticket_booking_system.security;
 
-import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -21,12 +20,9 @@ public class JwtService {
     // JWT token expiration time: 24 hours
     private final long EXP_TIME = 1000L * 60 * 60 * 24;
 
-    // Constructor: Read Base64-encoded secret from application.properties
+    // Constructor: Generate Secret Key
     public JwtService(@Value("${jwt.secret}") String key) {
-
-        byte[] decodedKey = Base64.getDecoder().decode(key);
-
-        SECRET_KEY = Keys.hmacShaKeyFor(decodedKey);
+        SECRET_KEY = Keys.hmacShaKeyFor(key.getBytes());
     }
 
     // Generate JWT Token
