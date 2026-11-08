@@ -18,11 +18,18 @@ public class JwtService {
     private final SecretKey SECRET_KEY;
 
     // JWT token expiration time: 24 hours
-    private final long EXP_TIME = 1000L * 60 * 60 * 24;
+    private static final long EXP_TIME = 1000L * 60 * 60 * 24;
 
     // Constructor: Generate Secret Key
     public JwtService(@Value("${jwt.secret}") String key) {
-        SECRET_KEY = Keys.hmacShaKeyFor(key.getBytes());
+
+        if (key == null || key.getBytes(java.nio.charset.StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalArgumentException(
+                    "JWT secret must contain at least 32 bytes.");
+        }
+
+        SECRET_KEY = Keys.hmacShaKeyFor(
+                key.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 
     // Generate JWT Token
